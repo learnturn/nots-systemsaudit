@@ -1,0 +1,1919 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,400;0,500;0,600;0,700;1,600&family=Barlow+Semi+Condensed:wght@500;600;700&display=swap" rel="stylesheet" />
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:#EDEDEA;font-family:Barlow,system-ui,sans-serif;color:#17181A;-webkit-font-smoothing:antialiased}
+  a{color:#8B0E2E;text-decoration:none}
+  a:hover{color:#6E0B24;text-decoration:underline}
+  input,select,textarea,button{font-family:Barlow,system-ui,sans-serif;font-size:15px;color:#17181A}
+  input:focus,select:focus,textarea:focus{outline:2px solid #8B0E2E;outline-offset:1px}
+  ::placeholder{color:#9A9C9F}
+  .num{font-variant-numeric:tabular-nums}
+  @media print{
+    .noprint{display:none !important}
+    body{background:#fff}
+    .sheet{box-shadow:none !important;border:none !important}
+  }
+</style>
+</helmet>
+
+<template id="__bundler_thumbnail">
+  <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <rect width="200" height="200" fill="#17181A" />
+    <rect x="60" y="52" width="80" height="96" rx="6" fill="#EDEDEA" />
+    <rect x="72" y="70" width="40" height="6" rx="3" fill="#8B0E2E" />
+    <rect x="72" y="86" width="56" height="5" rx="2.5" fill="#B0B1B3" />
+    <rect x="72" y="100" width="56" height="5" rx="2.5" fill="#B0B1B3" />
+    <rect x="72" y="114" width="34" height="5" rx="2.5" fill="#B0B1B3" />
+    <path d="M112 130 l7 8 14 -18" stroke="#8B0E2E" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+  </svg>
+</template>
+
+<div style="min-height:100vh;background:#EDEDEA;display:flex;flex-direction:column">
+
+  <sc-if value="{{ showChrome }}" hint-placeholder-val="{{ true }}">
+    <div class="noprint" style="background:#17181A;color:#fff;display:flex;align-items:center;gap:14px;padding:10px 16px;position:sticky;top:0;z-index:40;box-shadow:0 1px 0 rgba(255,255,255,.08)">
+      <div style="background:#fff;border-radius:4px;padding:5px 8px;display:flex;align-items:center"><img src="assets/nots-logo.png" alt="NOTS Logistics" style="height:22px;width:auto;display:block" /></div>
+      <div style="width:1px;height:24px;background:#3A3B3E"></div>
+      <div style="font-family:'Barlow Semi Condensed',sans-serif;font-weight:600;font-size:17px;letter-spacing:.06em;text-transform:uppercase;color:#E8E8E6">Quality Audit</div>
+      <div style="flex:1"></div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="text-align:right;line-height:1.15">
+          <div style="font-size:14px;font-weight:600">{{ user.name }}</div>
+          <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#B9BABC">{{ user.role }}</div>
+        </div>
+        <button onClick="{{ signOut }}" style="background:transparent;border:1px solid #4A4B4E;color:#D8D8D6;border-radius:4px;padding:7px 11px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer">Sign out</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isLogin }}" hint-placeholder-val="{{ true }}">
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:32px 20px;background:linear-gradient(180deg,#17181A 0%,#17181A 46%,#EDEDEA 46%,#EDEDEA 100%)">
+      <div style="width:100%;max-width:460px">
+        <div style="text-align:center;padding-bottom:26px">
+          <div style="display:inline-flex;background:#fff;border-radius:6px;padding:12px 18px"><img src="assets/nots-logo.png" alt="NOTS Logistics" style="height:44px;width:auto;display:block" /></div>
+          <div style="font-family:'Barlow Semi Condensed',sans-serif;font-weight:600;font-size:15px;letter-spacing:.22em;text-transform:uppercase;color:#C9CACB;margin-top:14px">Quality Audit System</div>
+        </div>
+        <div style="background:#fff;border:1px solid #DFDFDB;border-radius:10px;padding:22px;box-shadow:0 12px 34px rgba(0,0,0,.22)">
+          <div style="font-family:'Barlow Semi Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#7A7C80;padding-bottom:12px">Who is auditing?</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <sc-for list="{{ users }}" as="u" hint-placeholder-count="4">
+              <button onClick="{{ u.signIn }}" style="display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:#F7F7F5;border:1px solid #DFDFDB;border-left:4px solid #8B0E2E;border-radius:6px;padding:13px 14px;cursor:pointer" style-hover="background:#fff;border-color:#8B0E2E">
+                <div style="flex:1">
+                  <div style="font-weight:600;font-size:16px">{{ u.name }}</div>
+                  <div style="font-size:12.5px;color:#7A7C80">{{ u.sub }}</div>
+                </div>
+                <div style="font-family:'Barlow Semi Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#8B0E2E;background:#F6E7EB;border-radius:3px;padding:4px 8px">{{ u.role }}</div>
+              </button>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+    <div style="flex:1;padding:26px 18px 40px;max-width:980px;width:100%;margin:0 auto">
+      <div style="padding-bottom:20px">
+        <div style="font-family:'Barlow Semi Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#8B0E2E">{{ today }}</div>
+        <div style="font-family:'Barlow Semi Condensed',sans-serif;font-size:30px;font-weight:700;line-height:1.1;padding-top:2px">{{ greeting }}</div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;padding-bottom:22px">
+        <div style="background:#fff;border:1px solid #DFDFDB;border-radius:8px;padding:14px">
+          <div class="num" style="font-family:'Barlow Semi Condensed',sans-serif;font-size:30px;font-weight:700;line-height:1">{{ kpi.audits }}</div>
+          <div style="font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:#7A7C80;padding-top:3px">Audits logged</div>
+        </div>
+        <div style="background:#fff;border:1px solid #DFDFDB;border-radius:8px;padding:14px">
+          <div class="num" style="font-family:'Barlow Semi Condensed',sans-serif;font-size:30px;font-weight:700;line-height:1">{{ kpi.conformance }}</div>
+          <div style="font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:#7A7C80;padding-top:3px">Conformance</div>
+        </div>
+        <div style="background:#fff;border:1px solid #DFDFDB;border-radius:8px;padding:14px">
+          <div class="num" style="font-family:'Barlow Semi Condensed',sans-serif;font-size:30px;font-weight:700;line-height:1;color:#8B0E2E">{{ kpi.open }}</div>
+          <div style="font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:#7A7C80;padding-top:3px">Open findings</div>
+        </div>
+        <div style="background:#fff;border:1px solid #DFDFDB;border-radius:8px;padding:14px">
+          <div class="num" style="font-family:'Barlow Semi Condensed',sans-serif;font-size:30px;font-weight:700;line-height:1">{{ kpi.repeat }}</div>
+          <div style="font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:#7A7C80;padding-top:3px">Repeat findings</div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px">
+        <sc-for list="{{ menu }}" as="m" hint-placeholder-count="4">
+          <button onClick="{{ m.go }}" style="text-align:left;background:#fff;border:1px solid #DFDFDB;border-top:5px solid #8B0E2E;border-radius:8px;padding:20px 18px 18px;cursor:pointer;min-height:132px;display:flex;flex-direction:column;gap:6px" style-hover="border-color:#8B0E2E;box-shadow:0 6px 20px rgba(0,0,0,.09)">
+            <div style="font-family:'Barlow Semi Condensed',sans-serif;font-size:22px;font-weight:700;letter-spacing:.01em">{{ m.title }}</div>
+            <div style="font-size:13.5px;color:#58595B;line-height:1.45;text-wrap:pretty">{{ m.desc }}</div>
+            <div style="flex:1"></div>
+            <div style="font-family:'Barlow Semi Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#8B0E2E">{{ m.cta }}</div>
+          </button>
+        </sc-for>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isAuditSite }}" hint-placeholder-val="{{ true }}">
+    <div style="flex:1;padding:22px 18px 40px;max-width:720px;width:100%;margin:0 auto">
+      <button onClick="{{ goHome }}" style="background:none;border:none;padding:0 0 14px;color:#8B0E2E;font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;cursor:pointer">&larr; Home</button>
+      <div style="font-family:'Barlow Semi Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#8B0E2E">Step 1 of 3</div>
+      <div style="font-family:'Barlow Semi Condensed',sans-serif;font-size:28px;font-weight:700;padding:2px 0 16px">Choose location</div>
+      <div style="display:flex;flex-direction:column;gap:9px">
+        <sc-for list="{{ siteOptions }}" as="s" hint-placeholder-count="5">
+          <button onClick="{{ s.pick }}" style="display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #DFDFDB;border-radius:8px;padding:18px 16px;cursor:pointer;text-align:left;min-height:64px" style-hover="border-color:#8B0E2E;background:#FCF8F9">
+            <div style="width:8px;height:34px;background:#8B0E2E;border-radius:2px"></div>
+            <div style="flex:1">
+              <div style="font-family:'Barlow Semi Condensed',sans-serif;font-size:20px;font-weight:600">{{ s.name }}</div>
+              <div style="font-size:12.5px;color:#7A7C80">{{ s.sub }}</div>
+            </div>
+            <div style="color:#B0B1B3;font-size:22px">&rsaquo;</div>
+          </button>
+        </sc-for>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isAuditProcess }}" hint-placeholder-val="{{ true }}">
+    <div style="flex:1;padding:22px 18px 40px;max-width:720px;width:100%;margin:0 auto">
+      <button onClick="{{ backToSite }}" style="background:none;border:none;padding:0 0 14px;color:#8B0E2E;font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;cursor:pointer">&larr; Location</button>
+      <div style="font-family:'Barlow Semi Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#8B0E2E">Step 2 of 3 &nbsp;&middot;&nbsp; {{ draft.site }}</div>
+      <div style="font-family:'Barlow Semi Condensed',sans-serif;font-size:28px;font-weight:700;padding:2px 0 16px">Choose process</div>
+
+      <div style="background:#fff;border:1px solid #DFDFDB;border-top:4px solid #8B0E2E;border-radius:8px;padding:14px;margin-bottom:12px">
+        <div style="font-family:'Barlow Semi Condensed',sans-serif;font-size:12.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#8B0E2E;padding-bottom:9px">Who is being audited? &mdash; required</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px">
+          <label style="display:block">
+            <span style="display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7A7C80;padding-bottom:5px">Name</span>
+            <input value="{{ draft.auditeeName }}" onChange="{{ setAuditeeName }}" placeholder="First and last name" style="width:100%;padding:13px 11px;border:1px solid #DFDFDB;border-radius:5px;background:#F9F9F7;font-size:16px" />
+          </label>
+          <label style="display:block">
+            <span style="display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7A7C80;padding-bottom:5px">Employee number</span>
+            <input value="{{ draft.auditeeNo }}" onChange="{{ setAuditeeNo }}" placeholder="EE #4417" style="width:100%;padding:13px 11px;border:1px solid #DFDFDB;border-radius:5px;background:#F9F9F7;font-size:16px" />
+          </label>
+        </div>
+        <div style="font-size:12.5px;color:#7A7C80;padding-top:8px;line-height:1.45">The employee number drives the repeat-finding check, so enter it exactly as it appears on the badge.</div>
+      </div>
+
+      <div style="background:#fff;border:1px solid #DFDFDB;border-radius:8px;padding:14px;margin-bottom:16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px">
+        <label style="display:block">
+          <span style="display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7A7C80;padding-bottom:5px">Shift</span>
+          <select value="{{ draft.shift }}" onChange="{{ setShift }}" style="width:100%;padding:11px 10px;border:1px solid #DFDFDB;border-radius:5px;background:#F9F9F7">
+            <sc-for list="{{ shifts }}" as="o" hint-placeholder-count="3"><option value="{{ o }}">{{ o }}</option></sc-for>
+          </select>
+        </label>
+        <label style="display:block">
+          <span style="display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7A7C80;padding-bottom:5px">Customer / Account</span>
+          <select value="{{ draft.customer }}" onChange="{{ setCustomer }}" style="width:100%;padding:11px 10px;border:1px solid #DFDFDB;border-radius:5px;background:#F9F9F7">
+            <sc-for list="{{ customers }}" as="o" hint-placeholder-count="3"><option value="{{ o }}">{{ o }}</option></sc-for>
+          </select>
+        </label>
+        <label style="display:block">
+          <span style="display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7A7C80;padding-bottom:5px">Audit layer</span>
+          <select value="{{ draft.layer }}" onChange="{{ setLayer }}" style="width:100%;padding:11px 10px;border:1px solid #DFDFDB;border-radius:5px;background:#F9F9F7">
+            <sc-for list="{{ layers }}" as="o" hint-placeholder-count="4"><option value="{{ o }}">{{ o }}</option></sc-for>
+          </select>
+        </label>
+      </div>
+
+      <sc-if value="{{ auditeeMissing }}" hint-placeholder-val="{{ true }}">
+        <div style="background:#FDF3F5;border:1px solid #E4B9C4;border-radius:6px;padding:12px 14px;margin-bottom:12px;font-size:13.5px;color:#8B0E2E">Enter the name and employee number of the person being audited to select a process.</div>
+      </sc-if>
+      <div style="display:flex;flex-direction:column;gap:9px">
+        <sc-for list="{{ processOptions }}" as="p" hint-placeholder-count="3">
+          <button onClick="{{ p.start }}" disabled="{{ auditeeMissing }}" style="display:flex;align-items:center;gap:12px;background:{{ p.bg }};border:1px solid #DFDFDB;border-radius:8px;padding:17px 16px;cursor:{{ p.cursor }};text-align:left;opacity:{{ p.opacity }}" style-hover="border-color:#8B0E2E">
+            <div style="flex:1">
+              <div style="font-family:'Barlow Semi Condensed',sans-serif;font-size:20px;font-weight:600">{{ p.name }}</div>
+              <div style="font-size:12.5px;color:#7A7C80">{{ p.sub }}</div>
+            </div>
+            <div style="font-family:'Barlow Semi Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:#8B0E2E;white-space:nowrap">{{ p.count }} pts</div>
+          </button>
+        </sc-for>
+        <sc-if value="{{ noProcesses }}" hint-placeholder-val="{{ false }}">
+          <div style="background:#fff;border:1px dashed #C9C9C4;border-radius:8px;padding:26px;text-align:center;color:#7A7C80;font-size:14px">No audit processes built for this site yet. An admin can add one in the Admin Portal.</div>
+        </sc-if>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isAuditRun }}" hint-placeholder-val="{{ true }}">
+    <div style="flex:1;display:flex;flex-direction:column;max-width:720px;width:100%;margin:0 auto">
+      <div style="padding:16px 18px 10px">
+        <div style="display:flex;align-items:baseline;gap:10px">
+          <div style="font-family:'Barlow Semi Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#8B0E2E">{{ run.processName }}</div>
+          <div style="flex:1"></div>
+          <div class="num" style="font-family:'Barlow Semi Condensed',sans-serif;font-size:13px;font-weight:700;color:#7A7C80">{{ run.position }}</div>
+        </div>
+        <div style="height:6px;background:#DCDCD8;border-radius:3px;margin-top:8px;overflow:hidden">
+          <div style="height:6px;background:#8B0E2E;border-radius:3px;width:{{ run.pct }}%"></div>
+        </div>
+        <div style="display:flex;gap:5px;padding-top:9px;flex-wrap:wrap">
+          <sc-for list="{{ run.dots }}" as="d" hint-placeholder-count="8">
+            <div style="width:26px;height:5px;border-radius:2px;background:{{ d.color }}"></div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="flex:1;padding:6px 18px 18px">
+        <div style="background:#fff;border:1px solid #DFDFDB;border-radius:10px;padding:20px 18px">
+          <div style="font-family:'Barlow Semi Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#7A7C80">Checkpoint {{ run.num }}</div>
+          <div style="font-size:23px;font-weight:600;line-height:1.28;padding:6px 0 12px;text-wrap:pretty">{{ run.text }}</div>
+          <sc-if value="{{ run.hasStandard }}" hint-placeholder-val="{{ true }}">
+            <div style="background:#F5F5F2;border-left:3px solid #58595B;border-radius:4px;padding:11px 13px;margin-bottom:16px">
+              <div style="font-size:10.5px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:#7A7C80;padding-bottom:3px">Standard / expected condition</div>
+              <div style="font-size:14px;color:#3E3F42;line-height:1.45">{{ run.standard }}</div>
+            </div>
+          </sc-if>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <button onClick="{{ run.markConform }}" style="min-height:74px;border-radius:8px;border:2px solid {{ run.conformBorder }};background:{{ run.conformBg }};color:{{ run.conformFg }};font-family:'Barlow Semi Condensed',sans-serif;font-size:19px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;cursor:pointer">Conforms</button>
+            <button onClick="{{ run.markBreak }}" style="min-height:74px;border-radius:8px;border:2px solid {{ run.breakBorder }};background:{{ run.breakBg }};color:{{ run.breakFg }};font-family:'Barlow Semi Condensed',sans-serif;font-size:19px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;cursor:pointer">Break found</button>
+          </div>
+          <button onClick="{{ run.markNA }}" style="width:100%;margin-top:9px;min-height:48px;border-radius:8px;border:1px solid {{ run.naBorder }};background:{{ run.naBg }};color:#58595B;font-size:14px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;cursor:pointer">Not applicable</button>
+
+          <sc-if value="{{ run.isBreak }}" hint-placeholder-val="{{ false }}">
+            <div style="border-top:1px solid #E6E6E2;margin-top:18px;padding-top:16px;display:flex;flex-direction:column;gap:13px">
+              <div style="font-family:'Barlow Semi Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#8B0E2E">Finding detail &mdash; required</div>
+              <label style="display:block">
+                <span style="display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7A7C80;padding-bottom:5px">What exactly broke down?</span>
+                <textarea value="{{ run.cp.note }}" onChange="{{ run.setNote }}" rows="3" placeholder="Describe what was observed, on how many units, and how it differed from the standard." style="width:100%;padding:11px;border:1px solid #DFDFDB;border-radius:5px;background:#F9F9F7;resize:vertical;line-height:1.45"></textarea>
+              </label>
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:11px">
+                <label style="display:block">
+                  <span style="display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7A7C80;padding-bottom:5px">Employee / team</span>
+                  <input value="{{ run.cp.employee }}" onChange="{{ run.setEmployee }}" list="ee-list" placeholder="EE #4417" style="width:100%;padding:11px 10px;border:1px solid #DFDFDB;border-radius:5px;background:#F9F9F7" />
+                </label>
+                <label style="display:block">
+                  <span style="display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7A7C80;padding-bottom:5px">Severity</span>
+                  <select value="{{ run.cp.severity }}" onChange="{{ run.setSeverity }}" style="width:100%;padding:11px 10px;border:1px solid #DFDFDB;border-radius:5px;background:#F9F9F7">
+                    <sc-for list="{{ severities }}" as="o" hint-placeholder-count="3"><option value="{{ o }}">{{ o }}</option></sc-for>
+                  </select>
+                </label>
+                <label style="display:block">
+                  <span style="display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7A7C80;padding-bottom:5px">Finding category</span>
+                  <select value="{{ run.cp.category }}" onChange="{{ run.setCategory }}" style="width:100%;padding:11px 10px;border:1px solid #DFDFDB;border-radius:5px;background:#F9F9F7">
+                    <sc-for list="{{ categories }}" as="o" hint-placeholder-count="4"><option value="{{ o }}">{{ o }}</option></sc-for>
+                  </select>
+                </label>
+                <label style="display:block">
+                  <span style="display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7A7C80;padding-bottom:5px">Customer impact</span>
+                  <select value="{{ run.cp.impact }}" onChange="{{ run.setImpact }}" style="width:100%;padding:11px 10px;border:1px solid #DFDFDB;border-radius:5px;background:#F9F9F7">
+                    <sc-for list="{{ impacts }}" as="o" hint-placeholder-count="4"><option value="{{ o }}">{{ o }}</option></sc-for>
+                  </select>
+                </label>
+              </div>
+              <label style="display:block">
+                <span style="display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7A7C80;padding-bottom:5px">Immediate containment &mdash; what protected the customer this shift?</span>
+                <textarea value="{{ run.cp.containment }}" onChange="{{ run.setContainment }}" rows="2" placeholder="Re-checked, pulled from staging, held for verification..." style="width:100%;padding:11px;border:1px solid #DFDFDB;border-radius:5px;background:#F9F9F7;resize:vertical;line-height:1.45"></textarea>
+              </label>
+            </div>
+          </sc-if>
+        </div>
+      </div>
+
+      <div style="position:sticky;bottom:0;background:#EDEDEA;border-top:1px solid #DCDCD8;padding:12px 18px;display:flex;gap:10px">
+        <button onClick="{{ run.prev }}" style="min-height:52px;padding:0 18px;border-radius:7px;border:1px solid #C4C4C0;background:#fff;font-size:14px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;cursor:pointer">Back</button>
+        <button onClick="{{ run.next }}" style="flex:1;min-height:52px;border-radius:7px;border:none;background:#8B0E2E;color:#fff;font-family:'Barlow Semi Condensed',sans-serif;font-size:18px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer" style-hover="background:#6E0B24">{{ run.nextLabel }}</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isAuditReview }}" hint-placeholder-val="{{ true }}">
+    <div style="flex:1;padding:22px 18px 40px;max-width:760px;width:100%;margin:0 auto">
+      <div style="font-family:'Barlow Semi Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#8B0E2E">Step 3 of 3</div>
+      <div style="font-family:'Barlow Semi Condensed',sans-serif;font-size:28px;font-weight:700;padding:2px 0 4px">Review &amp; submit</div>
+      <div style="font-size:13.5px;color:#58595B;padding-bottom:16px">{{ review.meta }}</div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;padding-bottom:16px">
+        <div style="background:#fff;border:1px solid #DFDFDB;border-radius:8px;padding:13px">
+          <div class="num" style="font-family:'Barlow Semi Condensed',sans-serif;font-size:26px;font-weight:700;line-height:1">{{ review.audited }}</div>
+          <div style="font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:#7A7C80">Audited</div>
+        </div>
+        <div style="background:#fff;border:1px solid #DFDFDB;border-radius:8px;padding:13px">
+          <div class="num" style="font-family:'Barlow Semi Condensed',sans-serif;font-size:26px;font-weight:700;line-height:1">{{ review.conforming }}</div>
+          <div style="font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:#7A7C80">Conforming</div>
+        </div>
+        <div style="background:#fff;border:1px solid #DFDFDB;border-radius:8px;padding:13px">
+          <div class="num" style="font-family:'Barlow Semi Condensed',sans-serif;font-size:26px;font-weight:700;line-height:1">{{ review.pct }}</div>
+          <div style="font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:#7A7C80">Conformance</div>
+        </div>
+        <div style="background:{{ review.resultBg }};border:1px solid {{ review.resultBg }};border-radius:8px;padding:13px">
+          <div style="font-family:'Barlow Semi Condensed',sans-serif;font-size:26px;font-weight:700;line-height:1;color:#fff">{{ review.result }}</div>
+          <div style="font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:rgba(255,255,255,.82)">vs {{ review.target }} target</div>
+        </div>
+      </div>
+
+      <div style="background:#fff;border:1px solid #DFDFDB;border-radius:8px;overflow:hidden;margin-bottom:16px">
+        <sc-for list="{{ review.rows }}" as="r" hint-placeholder-count="5">
+          <div style="display:flex;gap:12px;padding:13px 14px;border-bottom:1px solid #EEEEEA;align-items:flex-start">
+            <div style="width:30px;height:30px;border-radius:15px;background:{{ r.bg }};color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0">{{ r.mark }}</div>
+            <div style="flex:1">
+              <div style="font-size:14.5px;font-weight:500;line-height:1.4">{{ r.text }}</div>
+              <div style="font-size:12.5px;color:#8B0E2E;padding-top:3px">{{ r.note }}</div>
+            </div>
+            <button onClick="{{ r.jump }}" style="background:none;border:1px solid #DFDFDB;border-radius:4px;padding:5px 9px;font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:#58595B;cursor:pointer;flex-shrink:0">Edit</button>
+          </div>
+        </sc-for>
+      </div>
+
+      <label style="display:block;padding-bottom:16px">
+        <span style="display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7A7C80;padding-bottom:5px">Audit notes (optional)</span>
+        <textarea value="{{ draft.notes }}" onChange="{{ setNotes }}" rows="2" placeholder="Context for the reviewer." style="width:100%;padding:11px;border:1px solid #DFDFDB;border-radius:5px;background:#fff;resize:vertical"></textarea>
+      </label>
+
+      <sc-if value="{{ review.blocked }}" hint-placeholder-val="{{ false }}">
+        <div style="background:#FDF3F5;border:1px solid #E4B9C4;border-radius:6px;padding:12px 14px;margin-bottom:14px;font-size:13.5px;color:#8B0E2E">Every break found needs a description before this audit can be submitted.</div>
+      </sc-if>
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button onClick="{{ review.back }}" style="min-height:52px;padding:0 20px;border-radius:7px;border:1px solid #C4C4C0;background:#fff;font-size:14px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;cursor:pointer">Back to checkpoints</button>
+        <button onClick="{{ review.submit }}" style="flex:1;min-width:200px;min-height:52px;border-radius:7px;border:none;background:#8B0E2E;color:#fff;font-family:'Barlow Semi Condensed',sans-serif;font-size:18px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer" style-hover="background:#6E0B24">Submit audit</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isAuditDone }}" hint-placeholder-val="{{ true }}">
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:30px 18px">
+      <div style="max-width:520px;width:100%;background:#fff;border:1px solid #DFDFDB;border-top:6px solid #8B0E2E;border-radius:10px;padding:28px 24px;text-align:center">
+        <div style="font-family:'Barlow Semi Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#7A7C80">Audit submitted</div>
+        <div class="num" style="font-family:'Barlow Semi Condensed',sans-serif;font-size:40px;font-weight:700;padding:4px 0 2px">{{ done.id }}</div>
+        <div style="font-size:14.5px;color:#58595B;line-height:1.5;text-wrap:pretty">{{ done.summary }}</div>
+        <div style="display:flex;gap:10px;padding-top:20px;flex-wrap:wrap">
+          <button onClick="{{ done.again }}" style="flex:1;min-width:150px;min-height:50px;border-radius:7px;border:none;background:#8B0E2E;color:#fff;font-family:'Barlow Semi Condensed',sans-serif;font-size:17px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer">New audit</button>
+          <button onClick="{{ goHome }}" style="flex:1;min-width:150px;min-height:50px;border-radius:7px;border:1px solid #C4C4C0;background:#fff;font-size:14px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;cursor:pointer">Home</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isLog }}" hint-placeholder-val="{{ true }}">
+    <div style="flex:1;padding:20px 18px 40px;max-width:1400px;width:100%;margin:0 auto">
+      <button onClick="{{ goHome }}" style="background:none;border:none;padding:0 0 12px;color:#8B0E2E;font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;cursor:pointer">&larr; Home</button>
+      <div style="display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;padding-bottom:14px">
+        <div>
+          <div style="font-family:'Barlow Semi Condensed',sans-serif;font-size:28px;font-weight:700;line-height:1.1">Audit Log</div>
+          <div style="font-size:13px;color:#7A7C80">Every audit performed, including clean ones.</div>
+        </div>
+        <div style="flex:1"></div>
+        <input value="{{ logQuery }}" onChange="{{ setLogQuery }}" placeholder="Search ID, site, process, auditor" style="min-width:240px;padding:10px 12px;border:1px solid #DFDFDB;border-radius:5px;background:#fff" />
+      </div>
+      <div style="background:#fff;border:1px solid #DFDFDB;border-radius:8px;overflow:auto">
+        <table style="width:100%;border-collapse:collapse;min-width:900px">
+          <thead>
+            <tr style="background:#17181A;color:#fff">
+              <th style="text-align:left;padding:11px 12px;font-family:'Barlow Semi Condensed',sans-serif;font-size:11.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase">Audit</th>
+              <th style="text-align:left;padding:11px 12px;font-family:'Barlow Semi Condensed',sans-serif;font-size:11.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase">Date</th>
+              <th style="text-align:left;padding:11px 12px;font-family:'Barlow Semi Condensed',sans-serif;font-size:11.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase">Site</th>
+              <th style="text-align:left;padding:11px 12px;font-family:'Barlow Semi Condensed',sans-serif;font-size:11.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase">Auditee</th>
+              <th style="text-align:left;padding:11px 12px;font-family:'Barlow Semi Condensed',sans-serif;font-size:11.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase">Process</th>
+              <th style="text-align:left;padding:11px 12px;font-family:'Barlow Semi Condensed',sans-serif;font-size:11.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase">Auditor</th>
+              <th style="text-align:right;padding:11px 12px;font-family:'Barlow Semi Condensed',sans-serif;font-size:11.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase">Pts</th>
+              <th style="text-align:right;padding:11px 12px;font-family:'Barlow Semi Condensed',sans-serif;font-size:11.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase">Conf.</th>
+              <th style="text-align:left;padding:11px 12px;font-family:'Barlow Semi Condensed',sans-serif;font-size:11.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase">Result</th>
+              <th style="text-align:left;padding:11px 12px;font-family:'Barlow Semi Condensed',sans-serif;font-size:11.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase">Findings</th>
+            </tr>
+          </thead>
+          <tbody>
+            <sc-for list="{{ logRows }}" as="a" hint-placeholder-count="4">
+              <tr onClick="{{ a.open }}" style="border-bottom:1px solid #EEEEEA;cursor:pointer" style-hover="background:#FAF7F8">
+                <td class="num" style="padding:11px 12px;font-weight:700;font-size:14px">{{ a.id }}</td>
+                <td class="num" style="padding:11px 12px;font-size:13.5px;color:#58595B;white-space:nowrap">{{ a.date }}</td>
+                <td style="padding:11px 12px;font-size:13.5px">{{ a.site }}</td>
+                <td style="padding:11px 12px;font-size:13.5px">{{ a.auditee }}</td>
+                <td style="padding:11px 12px;font-size:13.5px">{{ a.process }}</td>
+                <td style="padding:11px 12px;font-size:13.5px;color:#58595B">{{ a.auditor }}</td>
+                <td class="num" style="padding:11px 12px;font-size:13.5px;text-align:right">{{ a.pts }}</td>
+                <td class="num" style="padding:11px 12px;font-size:13.5px;text-align:right;font-weight:600">{{ a.pct }}</td>
+                <td style="padding:11px 12px"><span style="font-family:'Barlow Semi Condensed',sans-serif;font-size:11.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:#fff;background:{{ a.resultBg }};border-radius:3px;padding:4px 8px">{{ a.result }}</span></td>
+                <td style="padding:11px 12px;font-size:13.5px;color:{{ a.findColor }};font-weight:600">{{ a.findings }}</td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+        <sc-if value="{{ noLogRows }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:32px;text-align:center;color:#7A7C80;font-size:14px">No audits logged yet.</div>
+        </sc-if>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isLogDetail }}" hint-placeholder-val="{{ true }}">
+    <div style="flex:1;padding:20px 18px 40px;max-width:1100px;width:100%;margin:0 auto">
+      <button onClick="{{ backToLog }}" style="background:none;border:none;padding:0 0 12px;color:#8B0E2E;font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;cursor:pointer">&larr; Audit Log</button>
+      <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;padding-bottom:14px">
+        <div class="num" style="font-family:'Barlow Semi Condensed',sans-serif;font-size:32px;font-weight:700;line-height:1">{{ detail.id }}</div>
+        <span style="font-family:'Barlow Semi Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#fff;background:{{ detail.resultBg }};border-radius:3px;padding:5px 9px">{{ detail.result }}</span>
+        <div style="font-size:13.5px;color:#58595B">{{ detail.meta }}</div>
+        <div style="flex:1"></div>
+        <sc-if value="{{ detail.canDelete }}" hint-placeholder-val="{{ false }}">
+          <button onClick="{{ detail.deleteAudit }}" style="border:1px solid #E4B9C4;background:#FDF3F5;color:#8B0E2E;border-radius:5px;padding:10px 14px;font-size:12.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer" style-hover="background:#F9E4E9">Delete audit</button>
+        </sc-if>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;padding-bottom:16px">
+        <sc-for list="{{ detail.stats }}" as="s" hint-placeholder-count="4">
+          <div style="background:#fff;border:1px solid #DFDFDB;border-radius:8px;padding:12px 13px">
+            <div style="font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:#7A7C80">{{ s.label }}</div>
+            <div class="num" style="font-family:'Barlow Semi Condensed',sans-serif;font-size:20px;font-weight:700;padding-top:2px">{{ s.value }}</div>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="font-family:'Barlow Semi Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#7A7C80;padding-bottom:8px">Checkpoint results</div>
+      <div style="background:#fff;border:1px solid #DFDFDB;border-radius:8px;overflow:hidden;margin-bottom:20px">
+        <sc-for list="{{ detail.rows }}" as="r" hint-placeholder-count="5">
+          <div style="display:flex;gap:12px;padding:12px 14px;border-bottom:1px solid #EEEEEA;align-items:flex-start">
+            <div style="width:28px;height:28px;border-radius:14px;background:{{ r.bg }};color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12.5px;flex-shrink:0">{{ r.mark }}</div>
+            <div style="flex:1">
+              <div style="font-size:14.5px;line-height:1.4">{{ r.text }}</div>
+              <div style="font-size:12.5px;color:#8B0E2E;padding-top:3px">{{ r.note }}</div>
+            </div>
+            <div style="font-family:'Barlow Semi Condensed',sans-serif;font-size:12px;font-weight:700;color:#8B0E2E;flex-shrink:0">{{ r.findingId }}</div>
+          </div>
+        </sc-for>
+      </div>
+
+      <sc-if value="{{ detail.hasFindings }}" hint-placeholder-val="{{ false }}">
+        <div>
+          <div style="font-family:'Barlow Semi Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#7A7C80;padding-bottom:8px">Findings raised by this audit</div>
+          <div style="display:flex;flex-direction:column;gap:9px">
+            <sc-for list="{{ detail.findings }}" as="f" hint-placeholder-count="1">
+              <button onClick="{{ f.open }}" style="text-align:left;background:#fff;border:1px solid #DFDFDB;border-left:5px solid #8B0E2E;border-radius:7px;padding:14px;cursor:pointer;display:flex;gap:12px;align-items:center" style-hover="background:#FCF8F9">
+                <div style="flex:1">
+                  <div class="num" style="font-family:'Barlow Semi Condensed',sans-serif;font-size:17px;font-weight:700">{{ f.id }} &nbsp;<span style="font-size:13px;font-weight:500;color:#58595B">{{ f.category }}</span></div>
+                  <div style="font-size:13.5px;color:#3E3F42;line-height:1.4;padding-top:2px">{{ f.detail }}</div>
+                </div>
+                <span style="font-family:'Barlow Semi Condensed',sans-serif;font-size:11.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:#fff;background:{{ f.statusBg }};border-radius:3px;padding:4px 8px;white-space:nowrap">{{ f.statusShort }}</span>
+              </button>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+      <sc-if value="{{ detail.clean }}" hint-placeholder-val="{{ false }}">
+        <div style="background:#EAF4EE;border:1px solid #B9D9C6;border-radius:7px;padding:16px;font-size:14px;color:#1F5B3D">Clean audit &mdash; no findings raised. Logged as evidence the check was performed.</div>
+      </sc-if>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isFindings }}" hint-placeholder-val="{{ true }}">
+    <div style="flex:1;padding:20px 18px 40px;max-width:1400px;width:100%;margin:0 auto">
+      <button onClick="{{ goHome }}" style="background:none;border:none;padding:0 0 12px;color:#8B0E2E;font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;cursor:pointer">&larr; Home</button>
+      <div style="display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;padding-bottom:14px">
+        <div>
+          <div style="font-family:'Barlow Semi Condensed',sans-serif;font-size:28px;font-weight:700;line-height:1.1">Findings</div>
+          <div style="font-size:13px;color:#7A7C80">Contain first, countermeasure second, verify always.</div>
+        </div>
+        <div style="flex:1"></div>
+        <select value="{{ findFilter }}" onChange="{{ setFindFilter }}" style="padding:10px 12px;border:1px solid #DFDFDB;border-radius:5px;background:#fff">
+          <sc-for list="{{ findFilters }}" as="o" hint-placeholder-count="3"><option value="{{ o }}">{{ o }}</option></sc-for>
+        </select>
+        <input value="{{ findQuery }}" onChange="{{ setFindQuery }}" placeholder="Search ID, employee, site" style="min-width:220px;padding:10px 12px;border:1px solid #DFDFDB;border-radius:5px;background:#fff" />
+      </div>
+      <div style="display:flex;flex-direction:column;gap:9px">
+        <sc-for list="{{ findingRows }}" as="f" hint-placeholder-count="3">
+          <button onClick="{{ f.open }}" style="text-align:left;background:#fff;border:1px solid #DFDFDB;border-left:5px solid {{ f.sevColor }};border-radius:7px;padding:14px 15px;cursor:pointer;display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap" style-hover="border-color:#8B0E2E;background:#FCF8F9">
+            <div style="flex:1;min-width:240px">
+              <div style="display:flex;align-items:baseline;gap:9px;flex-wrap:wrap">
+                <div class="num" style="font-family:'Barlow Semi Condensed',sans-serif;font-size:19px;font-weight:700">{{ f.id }}</div>
+                <div style="font-size:13px;color:#58595B">{{ f.meta }}</div>
+                <sc-if value="{{ f.isRepeat }}" hint-placeholder-val="{{ false }}">
+                  <span style="font-family:'Barlow Semi Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:#8B0E2E;border:1px solid #D9AEB9;background:#F9EDF0;border-radius:3px;padding:3px 7px">Repeat</span>
+                </sc-if>
+              </div>
+              <div style="font-size:14px;color:#3E3F42;line-height:1.45;padding-top:4px;text-wrap:pretty">{{ f.detail }}</div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+              <span style="font-family:'Barlow Semi Condensed',sans-serif;font-size:11.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:#fff;background:{{ f.statusBg }};border-radius:3px;padding:4px 8px;white-space:nowrap">{{ f.statusShort }}</span>
+              <div style="font-size:12px;color:#7A7C80">{{ f.age }}</div>
+            </div>
+          </button>
+        </sc-for>
+        <sc-if value="{{ noFindingRows }}" hint-placeholder-val="{{ false }}">
+          <div style="background:#fff;border:1px dashed #C9C9C4;border-radius:8px;padding:30px;text-align:center;color:#7A7C80;font-size:14px">No findings match this filter.</div>
+        </sc-if>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isFindingDetail }}" hint-placeholder-val="{{ true }}">
+    <div style="flex:1;padding:20px 18px 48px;max-width:1240px;width:100%;margin:0 auto">
+      <button onClick="{{ backToFindings }}" style="background:none;border:none;padding:0 0 12px;color:#8B0E2E;font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;cursor:pointer">&larr; Findings</button>
+
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-bottom:6px">
+        <div class="num" style="font-family:'Barlow Semi Condensed',sans-serif;font-size:34px;font-weight:700;line-height:1">{{ fd.id }}</div>
+        <span style="font-family:'Barlow Semi Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#fff;background:{{ fd.sevColor }};border-radius:3px;padding:5px 9px">{{ fd.severity }}</span>
+        <span style="font-family:'Barlow Semi Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#fff;background:{{ fd.statusBg }};border-radius:3px;padding:5px 9px">{{ fd.statusShort }}</span>
+        <div style="flex:1"></div>
+        <sc-if value="{{ can.toggleStatus }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;border:1px solid #C4C4C0;border-radius:6px;overflow:hidden;background:#fff">
+            <button onClick="{{ fd.setOpen }}" style="border:none;background:{{ fd.openBg }};color:{{ fd.openFg }};padding:11px 18px;font-family:'Barlow Semi Condensed',sans-serif;font-size:14px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;cursor:pointer">Open</button>
+            <button onClick="{{ fd.setClosed }}" style="border:none;border-left:1px solid #C4C4C0;background:{{ fd.closedBg }};color:{{ fd.closedFg }};padding:11px 18px;font-family:'Barlow Semi Condensed',sans-serif;font-size:14px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;cursor:pointer">Closed</button>
+          </div>
+        </sc-if>
+      </div>
+      <div style="font-size:13.5px;color:#58595B;padding-bottom:16px">{{ fd.meta }}</div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px;align-items:start">
+
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div style="background:#fff;border:1px solid #DFDFDB;border-radius:8px;padding:16px">
+            <div style="font-family:'Barlow Semi Condensed',sans-serif;font-size:12.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#8B0E2E;padding-bottom:9px">Break detail &mdash; from the audit</div>
+            <div style="font-size:15px;line-height:1.55;text-wrap:pretty">{{ fd.breakDetail }}</div>
+            <div style="background:#F5F5F2;border-left:3px solid #58595B;border-radius:4px;padding:10px 12px;margin-top:12px">
+              <div style="font-size:10.5px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:#7A7C80;padding-bottom:3px">Standard / expected condition</div>
+              <div style="font-size:13.5px;color:#3E3F42;line-height:1.45">{{ fd.standard }}</div>
+            </div>
+            <div style="background:#F5F5F2;border-left:3px solid #58595B;border-radius:4px;padding:10px 12px;margin-top:9px">
+              <div style="font-size:10.5px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:#7A7C80;padding-bottom:3px">Immediate containment</div>
+              <div style="font-size:13.5px;color:#3E3F42;line-height:1.45">{{ fd.containment }}</div>
+            </div>
+          </div>
+
+          <div style="background:#fff;border:1px solid #DFDFDB;border-radius:8px;padding:16px">
+            <div style="font-family:'Barlow Semi Condensed',sans-serif;font-size:12.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#8B0E2E;padding-bottom:10px">Repeat finding check</div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <sc-for list="{{ fd.signals }}" as="s" hint-placeholder-count="2">
+                <div style="display:flex;gap:10px;align-items:flex-start;background:{{ s.bg }};border:1px solid {{ s.border }};border-radius:6px;padding:10px 12px">
+                  <div style="font-family:'Barlow Semi Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:{{ s.fg }};white-space:nowrap;padding-top:1px">{{ s.flag }}</div>
+                  <div style="flex:1">
+                    <div style="font-size:13px;font-weight:600">{{ s.label }}</div>
+                    <div style="font-size:12.5px;color:#58595B;line-height:1.4">{{ s.evidence }}</div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+            <label style="display:block;padding-top:12px">
+              <span style="display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7A7C80;padding-bottom:5px">Reviewer confirmation &mdash; repeat finding?</span>
+              <select value="{{ fd.repeat }}" onChange="{{ fd.setRepeat }}" disabled="{{ fd.locked }}" style="width:100%;padding:11px 10px;border:1px solid #DFDFDB;border-radius:5px;background:#F9F9F7">
+                <option value="Unreviewed">Unreviewed</option>
+                <option value="Yes">Yes &mdash; repeat</option>
+                <option value="No">No &mdash; first occurrence</option>
+              </select>
+            </label>
+          </div>
+
+          <div style="background:#fff;border:1px solid #DFDFDB;border-radius:8px;padding:16px">
+            <div style="font-family:'Barlow Semi Condensed',sans-serif;font-size:12.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#8B0E2E;padding-bottom:10px">Reason for break &amp; root cause</div>
+            <div style="display:flex;flex-direction:column;gap:12px">
+              <label style="display:block">
+                <span style="display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7A7C80;padding-bottom:5px">Reason for break (why it happened)</span>
+                <textarea value="{{ fd.reason }}" onChange="{{ fd.setReason }}" disabled="{{ fd.locked }}" rows="3" placeholder="Why did the process break? Go past the symptom." style="width:100%;padding:11px;border:1px solid #DFDFDB;border-radius:5px;background:#F9F9F7;resize:vertical;line-height:1.45"></textarea>
+              </label>
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:11px">
+                <label style="display:block">
+                  <span style="display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7A7C80;padding-bottom:5px">Root cause category</span>
+                  <select value="{{ fd.rootCause }}" onChange="{{ fd.setRootCause }}" disabled="{{ fd.locked }}" style="width:100%;padding:11px 10px;border:1px solid #DFDFDB;border-radius:5px;background:#F9F9F7">
+                    <sc-for list="{{ rootCauses }}" as="o" hint-placeholder-count="4"><option value="{{ o }}">{{ o }}</option></sc-for>
+                  </select>
+                </label>
+                <label style="display:block">
+                  <span style="display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7A7C80;padding-bottom:5px">Countermeasure type</span>
+                  <select value="{{ fd.cmType }}" onChange="{{ fd.setCmType }}" disabled="{{ fd.locked }}" style="width:100%;padding:11px 10px;border:1px solid #DFDFDB;border-radius:5px;background:#F9F9F7">
+                    <sc-for list="{{ cmTypes }}" as="o" hint-placeholder-count="4"><option value="{{ o }}">{{ o }}</option></sc-for>
+                  </select>
+                </label>
+                <label style="display:block">
+                  <span style="display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7A7C80;padding-bottom:5px">Owner</span>
+                  <input value="{{ fd.owner }}" onChange="{{ fd.setOwner }}" disabled="{{ fd.locked }}" placeholder="M. Sanders (TL)" style="width:100%;padding:11px 10px;border:1px solid #DFDFDB;border-radius:5px;background:#F9F9F7" />
+                </label>
+                <label style="display:block">
+                  <span style="display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7A7C80;padding-bottom:5px">Target completion</span>
+                  <input type="date" value="{{ fd.target }}" onChange="{{ fd.setTarget }}" disabled="{{ fd.locked }}" style="width:100%;padding:10px;border:1px solid #DFDFDB;border-radius:5px;background:#F9F9F7" />
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div style="background:#fff;border:1px solid #DFDFDB;border-radius:8px;padding:16px">
+            <div style="font-family:'Barlow Semi Condensed',sans-serif;font-size:12.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#8B0E2E;padding-bottom:4px">Countermeasure log</div>
+            <div style="font-size:12.5px;color:#7A7C80;padding-bottom:11px">Every note is kept with its timestamp and author. Nothing is overwritten.</div>
+            <sc-if value="{{ can.editFindings }}" hint-placeholder-val="{{ false }}">
+              <div style="padding-bottom:13px">
+                <textarea value="{{ fd.newNote }}" onChange="{{ fd.setNewNote }}" rows="3" placeholder="What has been done, or is being done, to resolve this finding?" style="width:100%;padding:11px;border:1px solid #DFDFDB;border-radius:5px;background:#F9F9F7;resize:vertical;line-height:1.45"></textarea>
+                <button onClick="{{ fd.addNote }}" style="margin-top:8px;width:100%;min-height:46px;border-radius:6px;border:none;background:#17181A;color:#fff;font-family:'Barlow Semi Condensed',sans-serif;font-size:15px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;cursor:pointer" style-hover="background:#000">Add note</button>
+              </div>
+            </sc-if>
+            <div style="display:flex;flex-direction:column">
+              <sc-for list="{{ fd.notes }}" as="n" hint-placeholder-count="2">
+                <div style="border-left:2px solid #DFDFDB;padding:0 0 14px 14px;position:relative">
+                  <div style="position:absolute;left:-5px;top:4px;width:8px;height:8px;border-radius:4px;background:#8B0E2E"></div>
+                  <div class="num" style="font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:#7A7C80">{{ n.stamp }}</div>
+                  <div style="font-size:14px;line-height:1.5;padding-top:3px;text-wrap:pretty">{{ n.text }}</div>
+                </div>
+              </sc-for>
+              <sc-if value="{{ fd.noNotes }}" hint-placeholder-val="{{ false }}">
+                <div style="font-size:13.5px;color:#9A9C9F;font-style:italic">No countermeasure activity recorded yet.</div>
+              </sc-if>
+            </div>
+          </div>
+
+          <div style="background:#fff;border:1px solid #DFDFDB;border-radius:8px;padding:16px">
+            <div style="display:flex;align-items:center;gap:10px;padding-bottom:4px">
+              <div style="font-family:'Barlow Semi Condensed',sans-serif;font-size:12.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#8B0E2E">Retraining detail</div>
+              <div style="flex:1"></div>
+              <label style="display:flex;align-items:center;gap:7px;font-size:12.5px;color:#58595B;cursor:pointer">
+                <input type="checkbox" checked="{{ fd.retrainUsed }}" onChange="{{ fd.setRetrainUsed }}" disabled="{{ fd.locked }}" style="width:17px;height:17px;accent-color:#8B0E2E" />
+                Retraining used
+              </label>
+            </div>
+            <div style="font-size:12.5px;color:#7A7C80;padding-bottom:11px">&ldquo;Retrained&rdquo; is a claim. These five steps are the evidence.</div>
+            <sc-if value="{{ fd.retrainUsed }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;flex-direction:column;gap:11px">
+                <sc-for list="{{ fd.retrainFields }}" as="r" hint-placeholder-count="6">
+                  <div>
+                    <div style="font-family:'Barlow Semi Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:#8B0E2E;padding-bottom:5px">{{ r.step }}</div>
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px">
+                      <sc-for list="{{ r.inputs }}" as="i" hint-placeholder-count="2">
+                        <label style="display:block">
+                          <span style="display:block;font-size:11px;font-weight:600;letter-spacing:.04em;color:#7A7C80;padding-bottom:4px">{{ i.label }}</span>
+                          <sc-if value="{{ i.isSelect }}" hint-placeholder-val="{{ false }}">
+                            <select value="{{ i.value }}" onChange="{{ i.onChange }}" disabled="{{ fd.locked }}" style="width:100%;padding:10px;border:1px solid #DFDFDB;border-radius:5px;background:#F9F9F7">
+                              <sc-for list="{{ i.options }}" as="o" hint-placeholder-count="3"><option value="{{ o }}">{{ o }}</option></sc-for>
+                            </select>
+                          </sc-if>
+                          <sc-if value="{{ i.isText }}" hint-placeholder-val="{{ true }}">
+                            <input type="{{ i.type }}" value="{{ i.value }}" onChange="{{ i.onChange }}" disabled="{{ fd.locked }}" placeholder="{{ i.placeholder }}" style="width:100%;padding:10px;border:1px solid #DFDFDB;border-radius:5px;background:#F9F9F7" />
+                          </sc-if>
+                        </label>
+                      </sc-for>
+                    </div>
+                  </div>
+                </sc-for>
+                <label style="display:block">
+                  <span style="display:block;font-size:11px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:#8B0E2E;padding-bottom:5px">Narrative of retraining depth</span>
+                  <textarea value="{{ fd.retrainNarrative }}" onChange="{{ fd.setRetrainNarrative }}" disabled="{{ fd.locked }}" rows="4" placeholder="What leadership reads: removal, refresher, monitoring, knowledge check, outcome." style="width:100%;padding:11px;border:1px solid #DFDFDB;border-radius:5px;background:#F9F9F7;resize:vertical;line-height:1.45"></textarea>
+                </label>
+              </div>
+            </sc-if>
+          </div>
+
+          <div style="background:#fff;border:1px solid #DFDFDB;border-radius:8px;padding:16px">
+            <div style="font-family:'Barlow Semi Condensed',sans-serif;font-size:12.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#8B0E2E;padding-bottom:10px">Closure &amp; verification</div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:11px">
+              <label style="display:block">
+                <span style="display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7A7C80;padding-bottom:5px">Status</span>
+                <select value="{{ fd.status }}" onChange="{{ fd.setStatus }}" disabled="{{ fd.statusLocked }}" style="width:100%;padding:11px 10px;border:1px solid #DFDFDB;border-radius:5px;background:#F9F9F7">
+                  <sc-for list="{{ statuses }}" as="o" hint-placeholder-count="4"><option value="{{ o }}">{{ o }}</option></sc-for>
+                </select>
+              </label>
+              <label style="display:block">
+                <span style="display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7A7C80;padding-bottom:5px">Actual completion</span>
+                <input type="date" value="{{ fd.actual }}" onChange="{{ fd.setActual }}" disabled="{{ fd.locked }}" style="width:100%;padding:10px;border:1px solid #DFDFDB;border-radius:5px;background:#F9F9F7" />
+              </label>
+              <label style="display:block">
+                <span style="display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7A7C80;padding-bottom:5px">Effectiveness check</span>
+                <select value="{{ fd.effect }}" onChange="{{ fd.setEffect }}" disabled="{{ fd.locked }}" style="width:100%;padding:11px 10px;border:1px solid #DFDFDB;border-radius:5px;background:#F9F9F7">
+                  <sc-for list="{{ effects }}" as="o" hint-placeholder-count="4"><option value="{{ o }}">{{ o }}</option></sc-for>
+                </select>
+              </label>
+              <label style="display:block">
+                <span style="display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7A7C80;padding-bottom:5px">Reported to customer</span>
+                <select value="{{ fd.reported }}" onChange="{{ fd.setReported }}" disabled="{{ fd.locked }}" style="width:100%;padding:11px 10px;border:1px solid #DFDFDB;border-radius:5px;background:#F9F9F7">
+                  <sc-for list="{{ reportedOptions }}" as="o" hint-placeholder-count="4"><option value="{{ o }}">{{ o }}</option></sc-for>
+                </select>
+              </label>
+            </div>
+            <sc-if value="{{ fd.locked }}" hint-placeholder-val="{{ false }}">
+              <div style="margin-top:12px;background:#F5F5F2;border-radius:5px;padding:10px 12px;font-size:13px;color:#58595B">Read-only &mdash; your role can view this finding but not edit it.</div>
+            </sc-if>
+          </div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isReports }}" hint-placeholder-val="{{ true }}">
+    <div style="flex:1;padding:20px 18px 48px;max-width:1240px;width:100%;margin:0 auto">
+      <button onClick="{{ goHome }}" class="noprint" style="background:none;border:none;padding:0 0 12px;color:#8B0E2E;font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;cursor:pointer">&larr; Home</button>
+      <div style="display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap;padding-bottom:14px">
+        <div>
+          <div style="font-family:'Barlow Semi Condensed',sans-serif;font-size:28px;font-weight:700;line-height:1.1">Reports</div>
+          <div style="font-size:13px;color:#7A7C80">{{ rep.scope }}</div>
+        </div>
+        <div style="flex:1"></div>
+        <div class="noprint" style="display:flex;gap:8px;flex-wrap:wrap">
+          <button onClick="{{ rep.exportAudits }}" style="border:1px solid #C4C4C0;background:#fff;border-radius:6px;padding:11px 14px;font-size:12.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;cursor:pointer">Export audits CSV</button>
+          <button onClick="{{ rep.exportFindings }}" style="border:1px solid #C4C4C0;background:#fff;border-radius:6px;padding:11px 14px;font-size:12.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;cursor:pointer">Export findings CSV</button>
+          <button onClick="{{ rep.print }}" style="border:none;background:#8B0E2E;color:#fff;border-radius:6px;padding:11px 16px;font-size:12.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;cursor:pointer">Print / PDF</button>
+        </div>
+      </div>
+
+      <div class="noprint" style="background:#fff;border:1px solid #DFDFDB;border-radius:8px;padding:14px;margin-bottom:16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px">
+        <label style="display:block">
+          <span style="display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7A7C80;padding-bottom:5px">From</span>
+          <input type="date" value="{{ rep.from }}" onChange="{{ rep.setFrom }}" style="width:100%;padding:10px;border:1px solid #DFDFDB;border-radius:5px;background:#F9F9F7" />
+        </label>
+        <label style="display:block">
+          <span style="display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7A7C80;padding-bottom:5px">To</span>
+          <input type="date" value="{{ rep.to }}" onChange="{{ rep.setTo }}" style="width:100%;padding:10px;border:1px solid #DFDFDB;border-radius:5px;background:#F9F9F7" />
+        </label>
+        <label style="display:block">
+          <span style="display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7A7C80;padding-bottom:5px">Site</span>
+          <select value="{{ rep.site }}" onChange="{{ rep.setSite }}" style="width:100%;padding:10px;border:1px solid #DFDFDB;border-radius:5px;background:#F9F9F7">
+            <sc-for list="{{ rep.siteOptions }}" as="o" hint-placeholder-count="4"><option value="{{ o }}">{{ o }}</option></sc-for>
+          </select>
+        </label>
+        <label style="display:block">
+          <span style="display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7A7C80;padding-bottom:5px">Process / area</span>
+          <select value="{{ rep.area }}" onChange="{{ rep.setArea }}" style="width:100%;padding:10px;border:1px solid #DFDFDB;border-radius:5px;background:#F9F9F7">
+            <sc-for list="{{ rep.areaOptions }}" as="o" hint-placeholder-count="4"><option value="{{ o }}">{{ o }}</option></sc-for>
+          </select>
+        </label>
+        <label style="display:block">
+          <span style="display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7A7C80;padding-bottom:5px">Status</span>
+          <select value="{{ rep.status }}" onChange="{{ rep.setStatus }}" style="width:100%;padding:10px;border:1px solid #DFDFDB;border-radius:5px;background:#F9F9F7">
+            <sc-for list="{{ rep.statusOptions }}" as="o" hint-placeholder-count="4"><option value="{{ o }}">{{ o }}</option></sc-for>
+          </select>
+        </label>
+      </div>
+
+      <div class="sheet" style="background:#fff;border:1px solid #DFDFDB;border-radius:8px;padding:18px;margin-bottom:16px">
+        <div style="display:flex;align-items:center;gap:12px;padding-bottom:12px">
+          <img src="assets/nots-logo.png" alt="NOTS Logistics" style="height:24px;width:auto" />
+          <div style="font-family:'Barlow Semi Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#7A7C80">Quality scorecard &mdash; KPIs vs target</div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px">
+          <sc-for list="{{ rep.kpis }}" as="k" hint-placeholder-count="8">
+            <div style="border:1px solid #E6E6E2;border-left:4px solid {{ k.color }};border-radius:6px;padding:12px 13px">
+              <div style="font-size:11.5px;letter-spacing:.05em;color:#58595B;line-height:1.3;min-height:29px">{{ k.label }}</div>
+              <div style="display:flex;align-items:baseline;gap:8px;padding-top:4px">
+                <div class="num" style="font-family:'Barlow Semi Condensed',sans-serif;font-size:26px;font-weight:700;line-height:1">{{ k.value }}</div>
+                <div class="num" style="font-size:12px;color:#7A7C80">target {{ k.target }}</div>
+              </div>
+              <div style="font-family:'Barlow Semi Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:{{ k.color }};padding-top:4px">{{ k.status }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div class="sheet" style="background:#fff;border:1px solid #DFDFDB;border-radius:8px;padding:18px;margin-bottom:16px">
+        <div style="font-family:'Barlow Semi Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#7A7C80;padding-bottom:14px">Monthly trend</div>
+        <div style="display:flex;align-items:flex-end;gap:10px;height:170px;padding-bottom:8px;overflow-x:auto">
+          <sc-for list="{{ rep.trend }}" as="t" hint-placeholder-count="6">
+            <div style="flex:1;min-width:38px;display:flex;flex-direction:column;align-items:center;gap:5px;height:100%;justify-content:flex-end">
+              <div class="num" style="font-size:11.5px;font-weight:700;color:#17181A">{{ t.audits }}</div>
+              <div style="width:100%;display:flex;gap:3px;align-items:flex-end;height:{{ t.h }}px">
+                <div style="flex:1;background:#17181A;border-radius:2px 2px 0 0;height:100%"></div>
+                <div style="flex:1;background:#8B0E2E;border-radius:2px 2px 0 0;height:{{ t.fh }}%"></div>
+              </div>
+              <div style="font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:#7A7C80;white-space:nowrap">{{ t.label }}</div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="display:flex;gap:16px;font-size:12px;color:#58595B;border-top:1px solid #EEEEEA;padding-top:10px">
+          <div style="display:flex;align-items:center;gap:6px"><div style="width:11px;height:11px;background:#17181A;border-radius:2px"></div>Audits</div>
+          <div style="display:flex;align-items:center;gap:6px"><div style="width:11px;height:11px;background:#8B0E2E;border-radius:2px"></div>Findings</div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-bottom:16px">
+        <div class="sheet" style="background:#fff;border:1px solid #DFDFDB;border-radius:8px;padding:18px">
+          <div style="font-family:'Barlow Semi Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#7A7C80;padding-bottom:10px">By site</div>
+          <sc-for list="{{ rep.bySite }}" as="b" hint-placeholder-count="4">
+            <div style="padding:8px 0;border-bottom:1px solid #F0F0EC">
+              <div style="display:flex;gap:10px;font-size:13.5px"><div style="flex:1;font-weight:500">{{ b.name }}</div><div class="num" style="color:#58595B">{{ b.detail }}</div></div>
+              <div style="height:5px;background:#EDEDEA;border-radius:3px;margin-top:5px"><div style="height:5px;background:#8B0E2E;border-radius:3px;width:{{ b.pct }}%"></div></div>
+            </div>
+          </sc-for>
+        </div>
+        <div class="sheet" style="background:#fff;border:1px solid #DFDFDB;border-radius:8px;padding:18px">
+          <div style="font-family:'Barlow Semi Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#7A7C80;padding-bottom:10px">By finding category</div>
+          <sc-for list="{{ rep.byCategory }}" as="b" hint-placeholder-count="4">
+            <div style="padding:8px 0;border-bottom:1px solid #F0F0EC">
+              <div style="display:flex;gap:10px;font-size:13.5px"><div style="flex:1;font-weight:500">{{ b.name }}</div><div class="num" style="color:#58595B">{{ b.detail }}</div></div>
+              <div style="height:5px;background:#EDEDEA;border-radius:3px;margin-top:5px"><div style="height:5px;background:#58595B;border-radius:3px;width:{{ b.pct }}%"></div></div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div class="sheet" style="background:#fff;border:1px solid #DFDFDB;border-radius:8px;overflow:auto">
+        <div style="display:flex;align-items:center;gap:10px;padding:14px 16px 10px">
+          <div style="font-family:'Barlow Semi Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#7A7C80">Findings detail</div>
+          <div class="num" style="font-size:12.5px;color:#7A7C80">{{ rep.findingCount }} rows</div>
+        </div>
+        <table style="width:100%;border-collapse:collapse;min-width:900px">
+          <thead>
+            <tr style="background:#F5F5F2;border-top:1px solid #E6E6E2;border-bottom:1px solid #E6E6E2">
+              <sc-for list="{{ rep.tableHead }}" as="h" hint-placeholder-count="8">
+                <th style="text-align:left;padding:9px 12px;font-family:'Barlow Semi Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:#58595B;white-space:nowrap">{{ h }}</th>
+              </sc-for>
+            </tr>
+          </thead>
+          <tbody>
+            <sc-for list="{{ rep.tableRows }}" as="r" hint-placeholder-count="4">
+              <tr style="border-bottom:1px solid #F1F1ED">
+                <sc-for list="{{ r.cells }}" as="c" hint-placeholder-count="8">
+                  <td style="padding:9px 12px;font-size:13px;vertical-align:top">{{ c }}</td>
+                </sc-for>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ true }}">
+    <div style="flex:1;padding:20px 18px 48px;max-width:1240px;width:100%;margin:0 auto">
+      <button onClick="{{ goHome }}" style="background:none;border:none;padding:0 0 12px;color:#8B0E2E;font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;cursor:pointer">&larr; Home</button>
+      <div style="font-family:'Barlow Semi Condensed',sans-serif;font-size:28px;font-weight:700;line-height:1.1">Admin Portal</div>
+      <div style="font-size:13px;color:#7A7C80;padding-bottom:14px">Build the audits your team runs, manage who can run them.</div>
+
+      <div style="display:flex;gap:6px;border-bottom:2px solid #DCDCD8;margin-bottom:18px;flex-wrap:wrap">
+        <sc-for list="{{ adminTabs }}" as="t" hint-placeholder-count="3">
+          <button onClick="{{ t.go }}" style="border:none;background:none;padding:11px 15px;font-family:'Barlow Semi Condensed',sans-serif;font-size:15px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;color:{{ t.color }};box-shadow:{{ t.shadow }}">{{ t.label }}</button>
+        </sc-for>
+      </div>
+
+      <sc-if value="{{ adminOnProcesses }}" hint-placeholder-val="{{ true }}">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;align-items:start">
+          <div>
+            <div style="display:flex;align-items:center;gap:10px;padding-bottom:9px">
+              <div style="font-family:'Barlow Semi Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#7A7C80">Audit processes</div>
+              <div style="flex:1"></div>
+              <button onClick="{{ admin.newProcess }}" style="border:none;background:#8B0E2E;color:#fff;border-radius:5px;padding:9px 13px;font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;cursor:pointer">+ New process</button>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <sc-for list="{{ admin.processes }}" as="p" hint-placeholder-count="3">
+                <button onClick="{{ p.select }}" style="text-align:left;background:{{ p.bg }};border:1px solid {{ p.border }};border-left:4px solid #8B0E2E;border-radius:6px;padding:12px 13px;cursor:pointer;display:flex;gap:10px;align-items:center">
+                  <div style="flex:1">
+                    <div style="font-family:'Barlow Semi Condensed',sans-serif;font-size:17px;font-weight:600">{{ p.name }}</div>
+                    <div style="font-size:12.5px;color:#7A7C80">{{ p.sub }}</div>
+                  </div>
+                  <div class="num" style="font-size:12px;color:#8B0E2E;font-weight:700">{{ p.count }}</div>
+                </button>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="grid-column:span 2;min-width:0">
+            <sc-if value="{{ admin.hasSelection }}" hint-placeholder-val="{{ true }}">
+              <div style="background:#fff;border:1px solid #DFDFDB;border-radius:8px;padding:16px">
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:11px;padding-bottom:14px">
+                  <label style="display:block">
+                    <span style="display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7A7C80;padding-bottom:5px">Process name</span>
+                    <input value="{{ admin.sel.name }}" onChange="{{ admin.setName }}" placeholder="Picking &mdash; Kanban application" style="width:100%;padding:10px;border:1px solid #DFDFDB;border-radius:5px;background:#F9F9F7" />
+                  </label>
+                  <label style="display:block">
+                    <span style="display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7A7C80;padding-bottom:5px">Area / process</span>
+                    <select value="{{ admin.sel.area }}" onChange="{{ admin.setArea }}" style="width:100%;padding:10px;border:1px solid #DFDFDB;border-radius:5px;background:#F9F9F7">
+                      <sc-for list="{{ areas }}" as="o" hint-placeholder-count="4"><option value="{{ o }}">{{ o }}</option></sc-for>
+                    </select>
+                  </label>
+                  <label style="display:block">
+                    <span style="display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7A7C80;padding-bottom:5px">Audit type</span>
+                    <select value="{{ admin.sel.auditType }}" onChange="{{ admin.setAuditType }}" style="width:100%;padding:10px;border:1px solid #DFDFDB;border-radius:5px;background:#F9F9F7">
+                      <sc-for list="{{ auditTypes }}" as="o" hint-placeholder-count="4"><option value="{{ o }}">{{ o }}</option></sc-for>
+                    </select>
+                  </label>
+                  <label style="display:block">
+                    <span style="display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7A7C80;padding-bottom:5px">Available at</span>
+                    <select value="{{ admin.sel.site }}" onChange="{{ admin.setSite }}" style="width:100%;padding:10px;border:1px solid #DFDFDB;border-radius:5px;background:#F9F9F7">
+                      <option value="All Sites">All sites</option>
+                      <sc-for list="{{ sites }}" as="o" hint-placeholder-count="4"><option value="{{ o }}">{{ o }}</option></sc-for>
+                    </select>
+                  </label>
+                </div>
+
+                <div style="display:flex;align-items:center;gap:10px;border-top:1px solid #EEEEEA;padding:12px 0 10px">
+                  <div style="font-family:'Barlow Semi Condensed',sans-serif;font-size:12.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#8B0E2E">Checkpoints</div>
+                  <div style="flex:1"></div>
+                  <button onClick="{{ admin.addCheckpoint }}" style="border:1px solid #C4C4C0;background:#fff;border-radius:5px;padding:8px 12px;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;cursor:pointer">+ Add checkpoint</button>
+                </div>
+
+                <div style="display:flex;flex-direction:column;gap:10px">
+                  <sc-for list="{{ admin.checkpoints }}" as="c" hint-placeholder-count="3">
+                    <div style="border:1px solid #E6E6E2;border-radius:6px;padding:12px;background:#FCFCFA">
+                      <div style="display:flex;align-items:center;gap:9px;padding-bottom:9px">
+                        <div class="num" style="width:24px;height:24px;border-radius:12px;background:#17181A;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700">{{ c.num }}</div>
+                        <div style="flex:1"></div>
+                        <button onClick="{{ c.up }}" style="border:1px solid #DFDFDB;background:#fff;border-radius:4px;width:30px;height:28px;cursor:pointer;color:#58595B">&uarr;</button>
+                        <button onClick="{{ c.down }}" style="border:1px solid #DFDFDB;background:#fff;border-radius:4px;width:30px;height:28px;cursor:pointer;color:#58595B">&darr;</button>
+                        <button onClick="{{ c.remove }}" style="border:1px solid #E4B9C4;background:#FDF3F5;color:#8B0E2E;border-radius:4px;padding:0 10px;height:28px;cursor:pointer;font-size:12px;font-weight:600">Remove</button>
+                      </div>
+                      <label style="display:block;padding-bottom:9px">
+                        <span style="display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7A7C80;padding-bottom:4px">Checkpoint question</span>
+                        <textarea value="{{ c.text }}" onChange="{{ c.setText }}" rows="2" placeholder="Is the Kanban part number matched to the tote pick label and scan-verified?" style="width:100%;padding:10px;border:1px solid #DFDFDB;border-radius:5px;background:#fff;resize:vertical;line-height:1.45"></textarea>
+                      </label>
+                      <label style="display:block;padding-bottom:9px">
+                        <span style="display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7A7C80;padding-bottom:4px">Standard / expected condition</span>
+                        <input value="{{ c.standard }}" onChange="{{ c.setStandard }}" placeholder="Standard Work PIK-04, Step 6" style="width:100%;padding:10px;border:1px solid #DFDFDB;border-radius:5px;background:#fff" />
+                      </label>
+                      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px">
+                        <label style="display:block">
+                          <span style="display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7A7C80;padding-bottom:4px">Default finding category</span>
+                          <select value="{{ c.category }}" onChange="{{ c.setCategory }}" style="width:100%;padding:10px;border:1px solid #DFDFDB;border-radius:5px;background:#fff">
+                            <sc-for list="{{ categories }}" as="o" hint-placeholder-count="4"><option value="{{ o }}">{{ o }}</option></sc-for>
+                          </select>
+                        </label>
+                        <label style="display:block">
+                          <span style="display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7A7C80;padding-bottom:4px">Default severity</span>
+                          <select value="{{ c.severity }}" onChange="{{ c.setSeverity }}" style="width:100%;padding:10px;border:1px solid #DFDFDB;border-radius:5px;background:#fff">
+                            <sc-for list="{{ severities }}" as="o" hint-placeholder-count="3"><option value="{{ o }}">{{ o }}</option></sc-for>
+                          </select>
+                        </label>
+                      </div>
+                    </div>
+                  </sc-for>
+                  <sc-if value="{{ admin.noCheckpoints }}" hint-placeholder-val="{{ false }}">
+                    <div style="border:1px dashed #C9C9C4;border-radius:6px;padding:24px;text-align:center;color:#7A7C80;font-size:13.5px">No checkpoints yet. Add the first one.</div>
+                  </sc-if>
+                </div>
+
+                <div style="display:flex;gap:9px;border-top:1px solid #EEEEEA;margin-top:14px;padding-top:13px;flex-wrap:wrap">
+                  <button onClick="{{ admin.duplicate }}" style="border:1px solid #C4C4C0;background:#fff;border-radius:5px;padding:10px 14px;font-size:12.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;cursor:pointer">Duplicate process</button>
+                  <button onClick="{{ admin.deleteProcess }}" style="border:1px solid #E4B9C4;background:#FDF3F5;color:#8B0E2E;border-radius:5px;padding:10px 14px;font-size:12.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;cursor:pointer">Delete process</button>
+                  <div style="flex:1"></div>
+                  <div style="font-size:12.5px;color:#7A7C80;align-self:center">{{ admin.savedNote }}</div>
+                </div>
+              </div>
+            </sc-if>
+            <sc-if value="{{ admin.noSelection }}" hint-placeholder-val="{{ false }}">
+              <div style="background:#fff;border:1px dashed #C9C9C4;border-radius:8px;padding:40px;text-align:center;color:#7A7C80;font-size:14px">Select a process to edit, or create a new one.</div>
+            </sc-if>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ adminOnPeople }}" hint-placeholder-val="{{ false }}">
+        <div style="max-width:820px">
+          <div style="display:flex;align-items:center;gap:10px;padding-bottom:9px">
+            <div style="font-family:'Barlow Semi Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#7A7C80">People &amp; access</div>
+            <div style="flex:1"></div>
+            <button onClick="{{ admin.newUser }}" style="border:none;background:#8B0E2E;color:#fff;border-radius:5px;padding:9px 13px;font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;cursor:pointer">+ Add person</button>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:9px">
+            <sc-for list="{{ admin.users }}" as="u" hint-placeholder-count="4">
+              <div style="background:#fff;border:1px solid #DFDFDB;border-radius:7px;padding:13px;display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;align-items:end">
+                <label style="display:block">
+                  <span style="display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7A7C80;padding-bottom:4px">Name</span>
+                  <input value="{{ u.name }}" onChange="{{ u.setName }}" style="width:100%;padding:10px;border:1px solid #DFDFDB;border-radius:5px;background:#F9F9F7" />
+                </label>
+                <label style="display:block">
+                  <span style="display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7A7C80;padding-bottom:4px">Employee #</span>
+                  <input value="{{ u.employeeNo }}" onChange="{{ u.setEmployeeNo }}" style="width:100%;padding:10px;border:1px solid #DFDFDB;border-radius:5px;background:#F9F9F7" />
+                </label>
+                <label style="display:block">
+                  <span style="display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7A7C80;padding-bottom:4px">Home site</span>
+                  <select value="{{ u.site }}" onChange="{{ u.setSite }}" style="width:100%;padding:10px;border:1px solid #DFDFDB;border-radius:5px;background:#F9F9F7">
+                    <sc-for list="{{ sites }}" as="o" hint-placeholder-count="4"><option value="{{ o }}">{{ o }}</option></sc-for>
+                  </select>
+                </label>
+                <label style="display:block">
+                  <span style="display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7A7C80;padding-bottom:4px">Access level</span>
+                  <select value="{{ u.role }}" onChange="{{ u.setRole }}" style="width:100%;padding:10px;border:1px solid #DFDFDB;border-radius:5px;background:#F9F9F7">
+                    <option value="Auditor">Auditor</option>
+                    <option value="Supervisor">Supervisor</option>
+                    <option value="Manager">Manager</option>
+                    <option value="Admin">Admin</option>
+                  </select>
+                </label>
+                <button onClick="{{ u.remove }}" style="border:1px solid #E4B9C4;background:#FDF3F5;color:#8B0E2E;border-radius:5px;padding:10px;font-size:12px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;height:40px">Remove</button>
+              </div>
+            </sc-for>
+          </div>
+          <div style="background:#fff;border:1px solid #DFDFDB;border-radius:7px;padding:15px;margin-top:14px">
+            <div style="font-family:'Barlow Semi Condensed',sans-serif;font-size:12.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#7A7C80;padding-bottom:9px">What each level can do</div>
+            <sc-for list="{{ permRows }}" as="p" hint-placeholder-count="4">
+              <div style="display:flex;gap:12px;padding:7px 0;border-bottom:1px solid #F1F1ED">
+                <div style="width:96px;font-family:'Barlow Semi Condensed',sans-serif;font-size:14px;font-weight:700;color:#8B0E2E">{{ p.role }}</div>
+                <div style="flex:1;font-size:13.5px;color:#3E3F42;line-height:1.45">{{ p.desc }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ adminOnSettings }}" hint-placeholder-val="{{ false }}">
+        <div style="max-width:660px;display:flex;flex-direction:column;gap:14px">
+          <div style="background:#fff;border:1px solid #DFDFDB;border-radius:8px;padding:16px">
+            <div style="font-family:'Barlow Semi Condensed',sans-serif;font-size:12.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#7A7C80;padding-bottom:10px">Thresholds</div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:11px">
+              <label style="display:block">
+                <span style="display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7A7C80;padding-bottom:5px">Conformance target %</span>
+                <input type="number" value="{{ admin.target }}" onChange="{{ admin.setTarget }}" min="0" max="100" style="width:100%;padding:10px;border:1px solid #DFDFDB;border-radius:5px;background:#F9F9F7" />
+              </label>
+              <label style="display:block">
+                <span style="display:block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#7A7C80;padding-bottom:5px">Repeat-finding window (days)</span>
+                <input type="number" value="{{ admin.window }}" onChange="{{ admin.setWindow }}" min="1" max="730" style="width:100%;padding:10px;border:1px solid #DFDFDB;border-radius:5px;background:#F9F9F7" />
+              </label>
+            </div>
+            <div style="font-size:12.5px;color:#7A7C80;padding-top:9px;line-height:1.5">An audit at or above the conformance target passes. Every non-conforming checkpoint raises its own finding regardless of the audit result.</div>
+          </div>
+          <div style="background:#fff;border:1px solid #DFDFDB;border-radius:8px;padding:16px">
+            <div style="font-family:'Barlow Semi Condensed',sans-serif;font-size:12.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#7A7C80;padding-bottom:10px">Data</div>
+            <div style="font-size:13.5px;color:#3E3F42;line-height:1.5;padding-bottom:12px">{{ admin.dataSummary }}</div>
+            <div style="display:flex;gap:9px;flex-wrap:wrap">
+              <button onClick="{{ admin.exportAll }}" style="border:1px solid #C4C4C0;background:#fff;border-radius:5px;padding:10px 14px;font-size:12.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;cursor:pointer">Export backup (JSON)</button>
+              <button onClick="{{ admin.loadSample }}" style="border:1px solid #C4C4C0;background:#fff;border-radius:5px;padding:10px 14px;font-size:12.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;cursor:pointer">Reload sample process set</button>
+              <button onClick="{{ admin.wipe }}" style="border:1px solid #E4B9C4;background:#FDF3F5;color:#8B0E2E;border-radius:5px;padding:10px 14px;font-size:12.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;cursor:pointer">Clear all audits &amp; findings</button>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+  </sc-if>
+
+  <template id="__bundler_thumbnail">
+    <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="120" fill="#17181A"/><rect x="36" y="30" width="48" height="60" rx="4" fill="#fff"/><rect x="44" y="40" width="20" height="4" rx="2" fill="#8B0E2E"/><rect x="44" y="52" width="32" height="3" rx="1.5" fill="#C9C9C4"/><rect x="44" y="61" width="32" height="3" rx="1.5" fill="#C9C9C4"/><rect x="44" y="70" width="20" height="3" rx="1.5" fill="#C9C9C4"/><path d="M64 76.5l5 5 11-13" stroke="#8B0E2E" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </template>
+
+  <datalist id="ee-list">
+    <sc-for list="{{ employeeList }}" as="e" hint-placeholder-count="3"><option value="{{ e }}"></option></sc-for>
+  </datalist>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;430&quot;,&quot;height&quot;:&quot;932&quot;}}">
+const LS_KEY = 'nots_qa_audit_v1';
+
+const SITES = ['Nashville, IL (Home Office)', 'White, GA', 'Shippensburg, PA', 'Lebanon, TN', 'Cartersville, GA'];
+const CUSTOMERS = ['Toyo Tire', 'Internal / NOTS', 'Multiple Accounts', 'Other'];
+const SHIFTS = ['1st Shift', '2nd Shift', '3rd Shift', 'Weekend', 'All Shifts'];
+const LAYERS = ['Layer 1 - Team Lead (Daily)', 'Layer 2 - Supervisor (Weekly)', 'Layer 3 - Site Manager (Monthly)', 'Layer 4 - Corporate / HR (Quarterly)', 'Customer Audit'];
+const AUDIT_TYPES = ['Layered Process Audit', 'Standard Work Observation', 'Customer-Requested Audit', 'Internal Spot Check', 'Corrective Action Verification', 'Customer Complaint Follow-Up', 'New Hire 30-Day Observation'];
+const AREAS = ['Receiving', 'Putaway', 'Picking', 'Kanban / Labeling', 'Packing', 'Staging', 'Shipping / Loading', 'Inventory / Cycle Count', 'Returns', 'Yard / Trailer Control', 'Equipment / PIT', '5S / Housekeeping', 'Safety', 'Documentation / Systems'];
+const CATEGORIES = ['Process Break - Standard Work Not Followed', 'Quality / Accuracy Error', 'Documentation Error', 'Labeling / Kanban Error', 'System / Scan Error', 'Safety Non-Conformance', '5S / Housekeeping', 'Equipment Condition', 'Training Gap'];
+const SEVERITIES = ['Critical', 'Major', 'Minor'];
+const IMPACTS = ['Yes - Contained Before Shipment', 'Yes - Escaped to Customer', 'No - Internal Only', 'Unknown / Under Review'];
+const ROOT_CAUSES = ['Unreviewed', 'Man (Person / Skill)', 'Method (Process / Standard Work)', 'Machine (Equipment)', 'Material', 'Measurement / System', 'Environment / Layout', 'Management / Staffing'];
+const CM_TYPES = ['Unreviewed', 'Retraining (Documented)', 'Standard Work Created / Updated', 'Visual Control Added', 'Error-Proofing / Poka-Yoke', 'Layout or Flow Change', 'System / Scan Control Change', 'Staffing or Assignment Change', 'Equipment Repair / Replacement', 'Coaching Conversation', 'Corrective Action (Disciplinary)', 'Customer Process Change Required'];
+const STATUSES = ['Open', 'In Progress', 'Pending Verification', 'Closed - Verified Effective', 'Closed - Ineffective / Reopened'];
+const EFFECTS = ['Too Early to Verify', 'Effective - No Recurrence', 'Partially Effective - Reduced Recurrence', 'Not Effective - Recurrence Confirmed'];
+const RETRAIN_METHODS = ['1:1 hands-on demonstration', 'Classroom / group session', 'Read & sign standard work', 'Video / LMS module', 'Buddy shadowing'];
+const RETRAIN_RESULTS = ['Not yet administered', 'Passed', 'Failed'];
+const RETRAIN_OUTCOMES = ['In progress', 'Passed - Returned to Unsupervised Work', 'Passed - Returned With Continued Spot Checks', 'Failed - Reassigned to Another Area', 'Failed - Additional Training Required', 'Failed - Escalated to HR / Corrective Action'];
+const REPORTED = ['Pending', 'Yes - In Weekly Report', 'Yes - Immediate Notification', 'No - Internal Only'];
+
+const CRIMSON = '#8B0E2E';
+const GREEN = '#1F7A4D';
+const AMBER = '#B8730B';
+const GREY = '#58595B';
+
+function todayISO() { const d = new Date(); return d.toISOString().slice(0, 10); }
+function fmtDate(iso) { if (!iso) return '-'; const p = String(iso).split('-'); if (p.length < 3) return iso; return p[1] + '/' + p[2] + '/' + p[0].slice(2); }
+function daysBetween(a, b) { return Math.round((new Date(b) - new Date(a)) / 86400000); }
+function pad(n, w) { return String(n).padStart(w, '0'); }
+
+function seedProcesses() {
+  return [
+    { id: 'P1', name: 'Picking - Kanban Application', area: 'Picking', auditType: 'Standard Work Observation', site: 'All Sites', checkpoints: [
+      { id: 'c1', text: 'Is the Kanban part number matched to the tote pick label before the card is applied?', standard: 'Standard Work PIK-04, Step 6: match Kanban part number to tote pick label and scan-verify before applying the card.', category: 'Labeling / Kanban Error', severity: 'Major' },
+      { id: 'c2', text: 'Is the scan-verify step performed on every tote, with no exceptions?', standard: 'PIK-04, Step 6. Scan-verify is not optional at any volume.', category: 'System / Scan Error', severity: 'Major' },
+      { id: 'c3', text: 'Are pick quantities correct against the pick list?', standard: 'PIK-04, Step 4: count and confirm quantity against the pick list line.', category: 'Quality / Accuracy Error', severity: 'Major' },
+      { id: 'c4', text: 'Are damaged or questionable parts pulled and routed to the hold area?', standard: 'PIK-04, Step 9: any part in question goes to hold, never to staging.', category: 'Quality / Accuracy Error', severity: 'Critical' },
+      { id: 'c5', text: 'Is the pick area free of loose Kanban cards not attached to a tote?', standard: '5S standard: staging rail holds active cards only.', category: '5S / Housekeeping', severity: 'Minor' }
+    ] },
+    { id: 'P2', name: 'Shipping - Trailer Load Verification', area: 'Shipping / Loading', auditType: 'Layered Process Audit', site: 'All Sites', checkpoints: [
+      { id: 'c1', text: 'Does the BOL match the physical load count before the trailer is sealed?', standard: 'SHP-02, Step 3: BOL count verified against physical count by the loader and confirmed by the checker.', category: 'Documentation Error', severity: 'Critical' },
+      { id: 'c2', text: 'Is the seal number recorded on the BOL and legible?', standard: 'SHP-02, Step 7: seal number written on the BOL and photographed.', category: 'Documentation Error', severity: 'Major' },
+      { id: 'c3', text: 'Are trailer chocks and restraints in place during loading?', standard: 'SAF-01: chock and restraint required before any PIT enters a trailer.', category: 'Safety Non-Conformance', severity: 'Critical' },
+      { id: 'c4', text: 'Is the load blocked and braced to prevent shift in transit?', standard: 'SHP-02, Step 5: void space blocked, load braced per customer spec.', category: 'Quality / Accuracy Error', severity: 'Major' }
+    ] }
+  ];
+}
+
+function seedUsers() {
+  return [
+    { id: 'U1', name: 'J. Povolish', employeeNo: 'EE #2210', site: 'White, GA', role: 'Auditor' },
+    { id: 'U2', name: 'D. Reyes', employeeNo: 'EE #1188', site: 'White, GA', role: 'Supervisor' },
+    { id: 'U3', name: 'M. Sanders', employeeNo: 'EE #1042', site: 'White, GA', role: 'Manager' },
+    { id: 'U4', name: 'Home Office QA', employeeNo: 'EE #0001', site: 'Nashville, IL (Home Office)', role: 'Admin' }
+  ];
+}
+
+function blankStore() {
+  return { users: seedUsers(), processes: seedProcesses(), audits: [], findings: [], seq: { audit: 0, finding: 0 }, settings: { target: 95, window: 90 } };
+}
+
+class Component extends DCLogic {
+  state = {
+    ready: false,
+    store: blankStore(),
+    user: null,
+    screen: 'login',
+    draft: null,
+    runIndex: 0,
+    lastAudit: null,
+    logQuery: '',
+    logSelected: null,
+    findQuery: '',
+    findFilter: 'All findings',
+    findSelected: null,
+    noteDrafts: {},
+    adminTab: 'Processes',
+    adminSel: null,
+    rep: { from: '', to: '', site: 'All sites', area: 'All areas', status: 'All statuses' }
+  };
+
+  componentDidMount() {
+    let store = null;
+    try { const raw = window.localStorage.getItem(LS_KEY); if (raw) store = JSON.parse(raw); } catch (e) { store = null; }
+    if (!store || !store.processes) store = blankStore();
+    if (!store.settings) store.settings = { target: 95, window: 90 };
+    const d = new Date();
+    const from = new Date(d.getFullYear(), d.getMonth() - 5, 1).toISOString().slice(0, 10);
+    this.setState({ store: store, ready: true, adminSel: store.processes.length ? store.processes[0].id : null, rep: Object.assign({}, this.state.rep, { from: from, to: todayISO() }) });
+  }
+
+  persist(store) {
+    try { window.localStorage.setItem(LS_KEY, JSON.stringify(store)); } catch (e) {}
+  }
+
+  mutate(fn) {
+    this.setState(function (s) {
+      const store = JSON.parse(JSON.stringify(s.store));
+      fn(store);
+      return { store: store };
+    }, () => this.persist(this.state.store));
+  }
+
+  perms() {
+    const r = this.state.user ? this.state.user.role : 'Auditor';
+    return {
+      audit: true,
+      viewLogs: r !== 'Auditor',
+      editFindings: r !== 'Auditor',
+      toggleStatus: r === 'Manager' || r === 'Admin',
+      reports: r !== 'Auditor',
+      admin: r === 'Admin'
+    };
+  }
+
+  go(screen) { this.setState({ screen: screen }); }
+
+  // ---------- audit flow ----------
+  startAudit() {
+    this.setState({ screen: 'auditSite', draft: { site: '', auditeeName: '', auditeeNo: '', customer: CUSTOMERS[0], shift: SHIFTS[0], layer: LAYERS[1], processId: null, checkpoints: [], notes: '' }, runIndex: 0 });
+  }
+
+  pickSite(site) {
+    const d = Object.assign({}, this.state.draft, { site: site });
+    this.setState({ draft: d, screen: 'auditProcess' });
+  }
+
+  startProcess(proc) {
+    const ee = (this.state.draft && this.state.draft.auditeeNo) || '';
+    const cps = proc.checkpoints.map(function (c) {
+      return { cpId: c.id, text: c.text, standard: c.standard, result: '', note: '', employee: ee, severity: c.severity, category: c.category, impact: IMPACTS[0], containment: '' };
+    });
+    const d = Object.assign({}, this.state.draft, { processId: proc.id, processName: proc.name, area: proc.area, auditType: proc.auditType, checkpoints: cps });
+    this.setState({ draft: d, screen: 'auditRun', runIndex: 0 });
+  }
+
+  // Patch whichever checkpoint is on screen right now.
+  setLive(patch) {
+    this.setState(function (st) {
+      if (!st.draft) return null;
+      const idx = Math.min(st.runIndex, st.draft.checkpoints.length - 1);
+      const cps = st.draft.checkpoints.slice();
+      cps[idx] = Object.assign({}, cps[idx], patch);
+      return { draft: Object.assign({}, st.draft, { checkpoints: cps }) };
+    });
+  }
+
+  setCp(i, patch) {
+    this.setState(function (s) {
+      const cps = s.draft.checkpoints.slice();
+      cps[i] = Object.assign({}, cps[i], patch);
+      return { draft: Object.assign({}, s.draft, { checkpoints: cps }) };
+    });
+  }
+
+  // Records the result on whatever checkpoint is live right now, then advances.
+  // No captured index is used anywhere: a stale handler cannot misfile a tap.
+  recordAndAdvance(result) {
+    const self = this;
+    this.setState(function (st) {
+      if (!st.draft || st.screen !== 'auditRun') return null;
+      const idx = Math.min(st.runIndex, st.draft.checkpoints.length - 1);
+      const cps = st.draft.checkpoints.slice();
+      cps[idx] = Object.assign({}, cps[idx], { result: result });
+      return { draft: Object.assign({}, st.draft, { checkpoints: cps }) };
+    });
+    if (this._advTimer) { clearTimeout(this._advTimer); this._advTimer = null; }
+    this._advTimer = setTimeout(function () {
+      self._advTimer = null;
+      self.setState(function (st) {
+        if (!st.draft || st.screen !== 'auditRun') return null;
+        const last = st.draft.checkpoints.length - 1;
+        if (st.runIndex >= last) return null;
+        if (!st.draft.checkpoints[st.runIndex].result) return null;
+        return { runIndex: st.runIndex + 1 };
+      });
+    }, 160);
+  }
+
+  componentWillUnmount() {
+    if (this._advTimer) clearTimeout(this._advTimer);
+  }
+
+  submitAudit() {
+    const self = this;
+    const d = this.state.draft;
+    const cps = d.checkpoints;
+    const audited = cps.filter(function (c) { return c.result === 'conform' || c.result === 'break'; }).length;
+    const conforming = cps.filter(function (c) { return c.result === 'conform'; }).length;
+    const breaks = cps.filter(function (c) { return c.result === 'break'; });
+    if (breaks.some(function (c) { return !c.note.trim(); })) return;
+    const target = this.state.store.settings.target / 100;
+    const pct = audited ? conforming / audited : 0;
+    let auditId = '';
+    this.mutate(function (store) {
+      store.seq.audit += 1;
+      auditId = 'A-' + pad(store.seq.audit, 4);
+      const date = todayISO();
+      const audit = {
+        id: auditId, date: date, site: d.site, auditeeName: d.auditeeName, auditeeNo: d.auditeeNo, customer: d.customer, shift: d.shift, layer: d.layer,
+        auditType: d.auditType, area: d.area, processId: d.processId, processName: d.processName,
+        auditor: self.state.user.name, audited: audited, conforming: conforming, pct: pct,
+        result: pct >= target ? 'PASS' : 'FAIL', notes: d.notes,
+        checkpoints: cps.map(function (c) { return { text: c.text, standard: c.standard, result: c.result, note: c.note, findingId: '' }; })
+      };
+      breaks.forEach(function (c) {
+        store.seq.finding += 1;
+        const fid = 'F-' + pad(store.seq.finding, 4);
+        const idx = cps.indexOf(c);
+        audit.checkpoints[idx].findingId = fid;
+        const prior = store.findings.filter(function (f) { return f.id !== fid; });
+        const emp = c.employee || d.auditeeNo;
+        const byEmp = emp ? prior.filter(function (f) {
+          return f.employee && f.employee.toLowerCase() === emp.toLowerCase() && f.category === c.category && Math.abs(daysBetween(f.date, date)) <= store.settings.window;
+        }) : [];
+        const byType = prior.filter(function (f) {
+          return f.auditType === d.auditType && f.area === d.area && f.category === c.category && Math.abs(daysBetween(f.date, date)) <= store.settings.window;
+        });
+        store.findings.push({
+          id: fid, auditId: auditId, date: date, site: d.site, customer: d.customer, shift: d.shift,
+          area: d.area, auditType: d.auditType, auditor: self.state.user.name, processName: d.processName,
+          auditeeName: d.auditeeName, auditeeNo: d.auditeeNo,
+          employee: c.employee || d.auditeeNo, category: c.category, breakDetail: c.note, standard: c.standard,
+          severity: c.severity, impact: c.impact, containment: c.containment,
+          repeat: 'Unreviewed', repeatByEmployee: byEmp.map(function (f) { return f.id; }), repeatByType: byType.map(function (f) { return f.id; }),
+          reason: '', rootCause: 'Unreviewed', cmType: 'Unreviewed', owner: '', target: '', actual: '',
+          status: 'Open', effect: 'Too Early to Verify', reported: 'Pending',
+          retrainUsed: false, retrain: { removed: 'No', removedDate: '', topic: '', trainer: '', trainDate: '', method: RETRAIN_METHODS[0], monStart: '', monEnd: '', monObs: '', monBy: '', monErrors: '', checkDate: '', checkBy: '', checkResult: RETRAIN_RESULTS[0], outcome: RETRAIN_OUTCOMES[0], narrative: '' },
+          notes: []
+        });
+      });
+      store.audits.unshift(audit);
+    });
+    setTimeout(function () {
+      const a = self.state.store.audits[0];
+      self.setState({ screen: 'auditDone', lastAudit: a ? a.id : auditId });
+    }, 30);
+  }
+
+  // ---------- finding edits ----------
+  patchFinding(id, patch) {
+    this.mutate(function (store) {
+      const f = store.findings.find(function (x) { return x.id === id; });
+      if (f) Object.assign(f, patch);
+    });
+  }
+
+  patchRetrain(id, patch) {
+    this.mutate(function (store) {
+      const f = store.findings.find(function (x) { return x.id === id; });
+      if (f) f.retrain = Object.assign({}, f.retrain, patch);
+    });
+  }
+
+  addNote(id) {
+    const text = (this.state.noteDrafts[id] || '').trim();
+    if (!text) return;
+    const author = this.state.user.name;
+    const stamp = new Date();
+    this.mutate(function (store) {
+      const f = store.findings.find(function (x) { return x.id === id; });
+      if (f) f.notes.unshift({ ts: stamp.toISOString(), author: author, text: text });
+    });
+    const nd = Object.assign({}, this.state.noteDrafts); nd[id] = '';
+    this.setState({ noteDrafts: nd });
+  }
+
+  download(name, text, type) {
+    const blob = new Blob([text], { type: type || 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = name; a.style.display = 'none';
+    document.body.appendChild(a); a.click();
+    setTimeout(function () { document.body.removeChild(a); URL.revokeObjectURL(url); }, 400);
+  }
+
+  csv(rows) {
+    return rows.map(function (r) {
+      return r.map(function (c) {
+        const v = c == null ? '' : String(c);
+        return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v;
+      }).join(',');
+    }).join('\n');
+  }
+
+  filteredForReports() {
+    const r = this.state.rep;
+    const inRange = function (d) {
+      if (r.from && d < r.from) return false;
+      if (r.to && d > r.to) return false;
+      return true;
+    };
+    const audits = this.state.store.audits.filter(function (a) {
+      return inRange(a.date) && (r.site === 'All sites' || a.site === r.site) && (r.area === 'All areas' || a.area === r.area);
+    });
+    const findings = this.state.store.findings.filter(function (f) {
+      if (!inRange(f.date)) return false;
+      if (r.site !== 'All sites' && f.site !== r.site) return false;
+      if (r.area !== 'All areas' && f.area !== r.area) return false;
+      if (r.status === 'Open only' && f.status.indexOf('Closed') === 0) return false;
+      if (r.status === 'Closed only' && f.status.indexOf('Closed') !== 0) return false;
+      if (r.status === 'Repeat only' && f.repeat !== 'Yes') return false;
+      return true;
+    });
+    return { audits: audits, findings: findings };
+  }
+
+  renderVals() {
+    const self = this;
+    const s = this.state;
+    const store = s.store;
+    const can = this.perms();
+    const screen = s.screen;
+    const target = store.settings.target / 100;
+
+    const vals = {
+      showChrome: !!s.user && screen !== 'login',
+      isLogin: screen === 'login',
+      isHome: screen === 'home',
+      isAuditSite: screen === 'auditSite',
+      isAuditProcess: screen === 'auditProcess',
+      isAuditRun: screen === 'auditRun',
+      isAuditReview: screen === 'auditReview',
+      isAuditDone: screen === 'auditDone',
+      isLog: screen === 'log',
+      isLogDetail: screen === 'logDetail',
+      isFindings: screen === 'findings',
+      isFindingDetail: screen === 'findingDetail',
+      isReports: screen === 'reports',
+      isAdmin: screen === 'admin',
+      can: can,
+      user: s.user || { name: '', role: '' },
+      signOut: function () { self.setState({ user: null, screen: 'login', draft: null }); },
+      goHome: function () { self.go('home'); },
+      shifts: SHIFTS, customers: CUSTOMERS, layers: LAYERS, severities: SEVERITIES,
+      categories: CATEGORIES, impacts: IMPACTS, rootCauses: ROOT_CAUSES, cmTypes: CM_TYPES,
+      statuses: STATUSES, effects: EFFECTS, reportedOptions: REPORTED, areas: AREAS,
+      auditTypes: AUDIT_TYPES, sites: SITES,
+      employeeList: store.users.map(function (u) { return u.employeeNo; }),
+      users: store.users.map(function (u) {
+        return { name: u.name, role: u.role, sub: u.employeeNo + '  ·  ' + u.site, signIn: function () { self.setState({ user: u, screen: 'home' }); } };
+      })
+    };
+
+    // ---------- home ----------
+    const openFindings = store.findings.filter(function (f) { return f.status.indexOf('Closed') !== 0; });
+    const totAud = store.audits.reduce(function (n, a) { return n + a.audited; }, 0);
+    const totCon = store.audits.reduce(function (n, a) { return n + a.conforming; }, 0);
+    vals.today = new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
+    vals.greeting = s.user ? 'Good shift, ' + s.user.name.split(' ').slice(-1)[0] + '.' : '';
+    vals.kpi = {
+      audits: store.audits.length,
+      conformance: totAud ? Math.round(totCon / totAud * 100) + '%' : '-',
+      open: openFindings.length,
+      repeat: store.findings.filter(function (f) { return f.repeat === 'Yes'; }).length
+    };
+    const menu = [{ title: 'Complete Audit', desc: 'Pick a location and process, then work the checkpoints on the tablet.', cta: 'Start audit →', go: function () { self.startAudit(); } }];
+    if (can.viewLogs) menu.push({ title: 'View Log', desc: 'Every audit performed, clean or not, with its checkpoint results.', cta: 'Open log →', go: function () { self.go('log'); } });
+    if (can.viewLogs) menu.push({ title: 'View Findings', desc: 'Countermeasures, retraining, repeat checks and closure.', cta: 'Open findings →', go: function () { self.go('findings'); } });
+    if (can.reports) menu.push({ title: 'Reports', desc: 'Filter, score against target, export or print for the customer.', cta: 'Build report →', go: function () { self.go('reports'); } });
+    if (can.admin) menu.push({ title: 'Admin Portal', desc: 'Create and edit audit processes, checkpoints, people and access.', cta: 'Manage →', go: function () { self.go('admin'); } });
+    vals.menu = menu;
+
+    // ---------- audit setup ----------
+    vals.draft = s.draft || { site: '', customer: '', shift: '', layer: '', notes: '' };
+    vals.siteOptions = SITES.map(function (site) {
+      const n = store.audits.filter(function (a) { return a.site === site; }).length;
+      return { name: site, sub: n ? n + (n === 1 ? ' audit logged' : ' audits logged') : 'No audits logged yet', pick: function () { self.pickSite(site); } };
+    });
+    vals.setShift = function (e) { const v = e.target.value; self.setState(function (st) { return { draft: Object.assign({}, st.draft, { shift: v }) }; }); };
+    vals.setCustomer = function (e) { const v = e.target.value; self.setState(function (st) { return { draft: Object.assign({}, st.draft, { customer: v }) }; }); };
+    vals.setLayer = function (e) { const v = e.target.value; self.setState(function (st) { return { draft: Object.assign({}, st.draft, { layer: v }) }; }); };
+    vals.setAuditeeName = function (e) { const v = e.target.value; self.setState(function (st) { return { draft: Object.assign({}, st.draft, { auditeeName: v }) }; }); };
+    vals.setAuditeeNo = function (e) { const v = e.target.value; self.setState(function (st) { return { draft: Object.assign({}, st.draft, { auditeeNo: v }) }; }); };
+    vals.auditeeMissing = !(s.draft && String(s.draft.auditeeName || '').trim() && String(s.draft.auditeeNo || '').trim());
+    vals.setNotes = function (e) { const v = e.target.value; self.setState(function (st) { return { draft: Object.assign({}, st.draft, { notes: v }) }; }); };
+    vals.backToSite = function () { self.go('auditSite'); };
+    const avail = store.processes.filter(function (p) { return p.site === 'All Sites' || !s.draft || p.site === s.draft.site; });
+    const blocked = !(s.draft && String(s.draft.auditeeName || '').trim() && String(s.draft.auditeeNo || '').trim());
+    vals.processOptions = avail.map(function (p) {
+      return {
+        name: p.name, sub: p.area + '  ·  ' + p.auditType, count: p.checkpoints.length,
+        bg: blocked ? '#F4F4F1' : '#fff', cursor: blocked ? 'not-allowed' : 'pointer', opacity: blocked ? 0.55 : 1,
+        start: function () { if (!blocked) self.startProcess(p); }
+      };
+    });
+    vals.noProcesses = avail.length === 0;
+
+    // ---------- run ----------
+    if (screen === 'auditRun' && s.draft && s.draft.checkpoints.length) {
+      const i = Math.min(s.runIndex, s.draft.checkpoints.length - 1);
+      const cp = s.draft.checkpoints[i];
+      const total = s.draft.checkpoints.length;
+      const done = s.draft.checkpoints.filter(function (c) { return c.result; }).length;
+      vals.run = {
+        processName: s.draft.processName,
+        position: (i + 1) + ' / ' + total,
+        num: (i + 1),
+        pct: Math.round(done / total * 100),
+        dots: s.draft.checkpoints.map(function (c) {
+          return { color: c.result === 'conform' ? GREEN : c.result === 'break' ? CRIMSON : c.result === 'na' ? '#B0B1B3' : '#DCDCD8' };
+        }),
+        text: cp.text,
+        standard: cp.standard,
+        hasStandard: !!cp.standard,
+        cp: cp,
+        isBreak: cp.result === 'break',
+        conformBorder: cp.result === 'conform' ? GREEN : '#D3D3CE',
+        conformBg: cp.result === 'conform' ? GREEN : '#fff',
+        conformFg: cp.result === 'conform' ? '#fff' : '#2C6B47',
+        breakBorder: cp.result === 'break' ? CRIMSON : '#D3D3CE',
+        breakBg: cp.result === 'break' ? CRIMSON : '#fff',
+        breakFg: cp.result === 'break' ? '#fff' : CRIMSON,
+        naBorder: cp.result === 'na' ? '#8E9093' : '#D3D3CE',
+        naBg: cp.result === 'na' ? '#E4E4E1' : '#fff',
+        markConform: function () { self.recordAndAdvance('conform'); },
+        markBreak: function () {
+          if (self._advTimer) { clearTimeout(self._advTimer); self._advTimer = null; }
+          self.setLive({ result: 'break' });
+        },
+        markNA: function () { self.recordAndAdvance('na'); },
+        setNote: function (e) { self.setLive({ note: e.target.value }); },
+        setEmployee: function (e) { self.setLive({ employee: e.target.value }); },
+        setSeverity: function (e) { self.setLive({ severity: e.target.value }); },
+        setCategory: function (e) { self.setLive({ category: e.target.value }); },
+        setImpact: function (e) { self.setLive({ impact: e.target.value }); },
+        setContainment: function (e) { self.setLive({ containment: e.target.value }); },
+        prev: function () {
+          if (self._advTimer) { clearTimeout(self._advTimer); self._advTimer = null; }
+          self.setState(function (st) { return st.runIndex > 0 ? { runIndex: st.runIndex - 1 } : { screen: 'auditProcess' }; });
+        },
+        next: function () {
+          if (self._advTimer) { clearTimeout(self._advTimer); self._advTimer = null; }
+          self.setState(function (st) {
+            const last = st.draft.checkpoints.length - 1;
+            return st.runIndex < last ? { runIndex: st.runIndex + 1 } : { screen: 'auditReview' };
+          });
+        },
+        nextLabel: i < total - 1 ? 'Next checkpoint' : 'Review audit'
+      };
+    }
+
+    // ---------- review ----------
+    if (screen === 'auditReview' && s.draft) {
+      const cps = s.draft.checkpoints;
+      const audited = cps.filter(function (c) { return c.result === 'conform' || c.result === 'break'; }).length;
+      const conforming = cps.filter(function (c) { return c.result === 'conform'; }).length;
+      const pct = audited ? conforming / audited : 0;
+      const pass = pct >= target;
+      vals.review = {
+        meta: 'Auditing ' + s.draft.auditeeName + ' (' + s.draft.auditeeNo + ')  ·  ' + s.draft.site + '  ·  ' + s.draft.processName + '  ·  ' + s.draft.shift,
+        audited: audited, conforming: conforming,
+        pct: audited ? Math.round(pct * 100) + '%' : '-',
+        result: pass ? 'PASS' : 'FAIL',
+        resultBg: pass ? GREEN : CRIMSON,
+        target: Math.round(target * 100) + '%',
+        blocked: cps.some(function (c) { return c.result === 'break' && !c.note.trim(); }),
+        rows: cps.map(function (c, idx) {
+          return {
+            mark: c.result === 'conform' ? '✓' : c.result === 'break' ? '✕' : c.result === 'na' ? '–' : '?',
+            bg: c.result === 'conform' ? GREEN : c.result === 'break' ? CRIMSON : '#B0B1B3',
+            text: c.text,
+            note: c.result === 'break' ? (c.note.trim() ? c.note : 'Description required') : '',
+            jump: function () { self.setState({ screen: 'auditRun', runIndex: idx }); }
+          };
+        }),
+        back: function () { self.setState({ screen: 'auditRun' }); },
+        submit: function () { self.submitAudit(); }
+      };
+    }
+
+    if (screen === 'auditDone') {
+      const a = store.audits.find(function (x) { return x.id === s.lastAudit; });
+      const nf = a ? store.findings.filter(function (f) { return f.auditId === a.id; }).length : 0;
+      vals.done = {
+        id: s.lastAudit || '',
+        summary: a ? (a.conforming + ' of ' + a.audited + ' checkpoints conforming (' + Math.round(a.pct * 100) + '%). ' + (nf ? nf + (nf === 1 ? ' finding' : ' findings') + ' raised and sent to the findings queue.' : 'Clean audit — logged as evidence the check was performed.')) : '',
+        again: function () { self.startAudit(); }
+      };
+    }
+
+    // ---------- log ----------
+    const q = s.logQuery.toLowerCase();
+    const logList = store.audits.filter(function (a) {
+      if (!q) return true;
+      return (a.id + ' ' + a.site + ' ' + a.processName + ' ' + a.auditor + ' ' + a.area + ' ' + (a.auditeeName || '') + ' ' + (a.auditeeNo || '')).toLowerCase().indexOf(q) >= 0;
+    });
+    vals.logQuery = s.logQuery;
+    vals.setLogQuery = function (e) { self.setState({ logQuery: e.target.value }); };
+    vals.logRows = logList.map(function (a) {
+      const nf = store.findings.filter(function (f) { return f.auditId === a.id; }).length;
+      return {
+        id: a.id, date: fmtDate(a.date), site: a.site, process: a.processName, auditor: a.auditor,
+        auditee: a.auditeeName ? a.auditeeName + ' · ' + (a.auditeeNo || '') : '—',
+        pts: a.conforming + '/' + a.audited, pct: Math.round(a.pct * 100) + '%',
+        result: a.result, resultBg: a.result === 'PASS' ? GREEN : CRIMSON,
+        findings: nf ? nf + (nf === 1 ? ' finding' : ' findings') : 'None',
+        findColor: nf ? CRIMSON : GREY,
+        open: function () { self.setState({ logSelected: a.id, screen: 'logDetail' }); }
+      };
+    });
+    vals.noLogRows = logList.length === 0;
+    vals.backToLog = function () { self.go('log'); };
+
+    if (screen === 'logDetail') {
+      const a = store.audits.find(function (x) { return x.id === s.logSelected; });
+      if (a) {
+        const fs = store.findings.filter(function (f) { return f.auditId === a.id; });
+        vals.detail = {
+          id: a.id, result: a.result, resultBg: a.result === 'PASS' ? GREEN : CRIMSON,
+          meta: fmtDate(a.date) + '  ·  ' + a.site + '  ·  ' + a.processName + '  ·  auditee ' + (a.auditeeName || '—') + '  ·  observed by ' + a.auditor,
+          canDelete: can.admin,
+          deleteAudit: function () {
+            const n = store.findings.filter(function (f) { return f.auditId === a.id; }).length;
+            const msg = 'Delete ' + a.id + ' permanently?\n\nThis removes the audit, all of its checkpoint results' + (n ? ', and its ' + n + (n === 1 ? ' finding' : ' findings') + ' with every countermeasure note and retraining record' : '') + '. This cannot be undone.';
+            if (!window.confirm(msg)) return;
+            self.mutate(function (store2) {
+              store2.audits = store2.audits.filter(function (x) { return x.id !== a.id; });
+              store2.findings = store2.findings.filter(function (f) { return f.auditId !== a.id; });
+            });
+            self.setState({ screen: 'log', logSelected: null });
+          },
+          stats: [
+            { label: 'Auditee', value: (a.auditeeName || '—') + (a.auditeeNo ? '  ·  ' + a.auditeeNo : '') },
+            { label: 'Shift', value: a.shift },
+            { label: 'Customer', value: a.customer },
+            { label: 'Audit layer', value: a.layer.split(' - ')[0] },
+            { label: 'Audit type', value: a.auditType },
+            { label: 'Checkpoints', value: a.conforming + ' of ' + a.audited },
+            { label: 'Conformance', value: Math.round(a.pct * 100) + '%  (target ' + Math.round(target * 100) + '%)' }
+          ],
+          rows: a.checkpoints.map(function (c) {
+            return {
+              mark: c.result === 'conform' ? '✓' : c.result === 'break' ? '✕' : '–',
+              bg: c.result === 'conform' ? GREEN : c.result === 'break' ? CRIMSON : '#B0B1B3',
+              text: c.text, note: c.note || '', findingId: c.findingId || ''
+            };
+          }),
+          hasFindings: fs.length > 0,
+          clean: fs.length === 0,
+          findings: fs.map(function (f) {
+            return {
+              id: f.id, category: f.category, detail: f.breakDetail,
+              statusShort: f.status.indexOf('Closed') === 0 ? 'Closed' : f.status,
+              statusBg: f.status.indexOf('Closed') === 0 ? GREEN : f.status === 'Open' ? CRIMSON : AMBER,
+              open: function () { self.setState({ findSelected: f.id, screen: 'findingDetail' }); }
+            };
+          })
+        };
+      } else {
+        vals.detail = { id: '', result: '', resultBg: GREY, meta: '', stats: [], rows: [], hasFindings: false, clean: false, findings: [], canDelete: false, deleteAudit: function () {} };
+      }
+    }
+
+    // ---------- findings list ----------
+    vals.findFilters = ['All findings', 'Open only', 'Closed only', 'Repeat only', 'Critical only', 'Needs review'];
+    vals.findFilter = s.findFilter;
+    vals.findQuery = s.findQuery;
+    vals.setFindFilter = function (e) { self.setState({ findFilter: e.target.value }); };
+    vals.setFindQuery = function (e) { self.setState({ findQuery: e.target.value }); };
+    const fq = s.findQuery.toLowerCase();
+    const fList = store.findings.filter(function (f) {
+      const ff = s.findFilter;
+      if (ff === 'Open only' && f.status.indexOf('Closed') === 0) return false;
+      if (ff === 'Closed only' && f.status.indexOf('Closed') !== 0) return false;
+      if (ff === 'Repeat only' && f.repeat !== 'Yes') return false;
+      if (ff === 'Critical only' && f.severity !== 'Critical') return false;
+      if (ff === 'Needs review' && !(f.repeat === 'Unreviewed' || f.rootCause === 'Unreviewed' || f.cmType === 'Unreviewed')) return false;
+      if (fq && (f.id + ' ' + f.employee + ' ' + (f.auditeeName || '') + ' ' + f.site + ' ' + f.category + ' ' + f.breakDetail).toLowerCase().indexOf(fq) < 0) return false;
+      return true;
+    });
+    const sevColor = function (sv) { return sv === 'Critical' ? CRIMSON : sv === 'Major' ? AMBER : GREY; };
+    vals.findingRows = fList.map(function (f) {
+      const closed = f.status.indexOf('Closed') === 0;
+      const age = closed ? 'Closed ' + fmtDate(f.actual || f.date) : daysBetween(f.date, todayISO()) + ' days open';
+      return {
+        id: f.id, meta: fmtDate(f.date) + '  ·  ' + f.site + '  ·  ' + (f.auditeeName || f.employee || 'no employee') + '  ·  ' + f.category,
+        detail: f.breakDetail, sevColor: sevColor(f.severity),
+        isRepeat: f.repeat === 'Yes' || f.repeatByEmployee.length > 0 || f.repeatByType.length > 0,
+        statusShort: closed ? 'Closed' : f.status, statusBg: closed ? GREEN : f.status === 'Open' ? CRIMSON : AMBER,
+        age: age,
+        open: function () { self.setState({ findSelected: f.id, screen: 'findingDetail' }); }
+      };
+    });
+    vals.noFindingRows = fList.length === 0;
+    vals.backToFindings = function () { self.go('findings'); };
+
+    // ---------- finding detail ----------
+    if (screen === 'findingDetail') {
+      const f = store.findings.find(function (x) { return x.id === s.findSelected; });
+      if (f) {
+        const locked = !can.editFindings;
+        const closed = f.status.indexOf('Closed') === 0;
+        const r = f.retrain;
+        const ch = function (key) { return function (e) { const patch = {}; patch[key] = e.target.value; self.patchFinding(f.id, patch); }; };
+        const rch = function (key) { return function (e) { const patch = {}; patch[key] = e.target.value; self.patchRetrain(f.id, patch); }; };
+        const sig = function (flag, label, ids, kind) {
+          const hit = ids.length > 0;
+          return {
+            flag: hit ? 'Match' : 'Clear', label: label,
+            evidence: hit ? 'Prior ' + (ids.length === 1 ? 'finding' : 'findings') + ': ' + ids.join(', ') + ' — within ' + store.settings.window + ' days' : 'No prior ' + kind + ' in the last ' + store.settings.window + ' days',
+            bg: hit ? '#FDF3F5' : '#F6F6F3', border: hit ? '#E4B9C4' : '#E6E6E2', fg: hit ? CRIMSON : GREY
+          };
+        };
+        vals.fd = {
+          id: f.id, severity: f.severity, sevColor: sevColor(f.severity),
+          statusShort: closed ? 'Closed' : f.status, statusBg: closed ? GREEN : f.status === 'Open' ? CRIMSON : AMBER,
+          meta: fmtDate(f.date) + '  ·  ' + f.auditId + '  ·  ' + f.site + '  ·  ' + f.area + '  ·  ' + (f.auditeeName ? f.auditeeName + ' (' + (f.employee || f.auditeeNo) + ')' : (f.employee || 'no employee recorded')) + '  ·  observed by ' + f.auditor,
+          breakDetail: f.breakDetail, standard: f.standard || 'Not recorded', containment: f.containment || 'Not recorded',
+          locked: locked, statusLocked: locked || !can.toggleStatus,
+          openBg: closed ? '#fff' : CRIMSON, openFg: closed ? GREY : '#fff',
+          closedBg: closed ? GREEN : '#fff', closedFg: closed ? '#fff' : GREY,
+          setOpen: function () { self.patchFinding(f.id, { status: 'Open' }); },
+          setClosed: function () { self.patchFinding(f.id, { status: 'Closed - Verified Effective', actual: f.actual || todayISO() }); },
+          signals: [
+            sig('', 'Same employee + same category', f.repeatByEmployee, 'finding for this employee in this category'),
+            sig('', 'Same audit type + area + category', f.repeatByType, 'finding of this audit type in this area')
+          ],
+          repeat: f.repeat, setRepeat: ch('repeat'),
+          reason: f.reason, setReason: ch('reason'),
+          rootCause: f.rootCause, setRootCause: ch('rootCause'),
+          cmType: f.cmType, setCmType: ch('cmType'),
+          owner: f.owner, setOwner: ch('owner'),
+          target: f.target, setTarget: ch('target'),
+          actual: f.actual, setActual: ch('actual'),
+          status: f.status, setStatus: ch('status'),
+          effect: f.effect, setEffect: ch('effect'),
+          reported: f.reported, setReported: ch('reported'),
+          newNote: s.noteDrafts[f.id] || '',
+          setNewNote: function (e) { const nd = Object.assign({}, self.state.noteDrafts); nd[f.id] = e.target.value; self.setState({ noteDrafts: nd }); },
+          addNote: function () { self.addNote(f.id); },
+          notes: f.notes.map(function (n) {
+            const d = new Date(n.ts);
+            return { stamp: d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) + '  ·  ' + n.author, text: n.text };
+          }),
+          noNotes: f.notes.length === 0,
+          retrainUsed: !!f.retrainUsed,
+          setRetrainUsed: function (e) { self.patchFinding(f.id, { retrainUsed: e.target.checked }); },
+          retrainNarrative: r.narrative, setRetrainNarrative: rch('narrative'),
+          retrainFields: [
+            { step: 'Step 1 — Removed from area', inputs: [
+              { label: 'Removed from area?', isSelect: true, isText: false, options: ['No', 'Yes'], value: r.removed, onChange: rch('removed') },
+              { label: 'Date removed', isText: true, isSelect: false, type: 'date', value: r.removedDate, onChange: rch('removedDate'), placeholder: '' }
+            ] },
+            { step: 'Step 2 — Refresher training', inputs: [
+              { label: 'Topic / standard work doc #', isText: true, isSelect: false, type: 'text', value: r.topic, onChange: rch('topic'), placeholder: 'PIK-04 Kanban Application' },
+              { label: 'Trainer', isText: true, isSelect: false, type: 'text', value: r.trainer, onChange: rch('trainer'), placeholder: 'M. Sanders (TL)' },
+              { label: 'Training date', isText: true, isSelect: false, type: 'date', value: r.trainDate, onChange: rch('trainDate'), placeholder: '' },
+              { label: 'Method', isSelect: true, isText: false, options: RETRAIN_METHODS, value: r.method, onChange: rch('method') }
+            ] },
+            { step: 'Step 3 — Monitoring', inputs: [
+              { label: 'Start', isText: true, isSelect: false, type: 'date', value: r.monStart, onChange: rch('monStart'), placeholder: '' },
+              { label: 'End', isText: true, isSelect: false, type: 'date', value: r.monEnd, onChange: rch('monEnd'), placeholder: '' },
+              { label: '# observations', isText: true, isSelect: false, type: 'number', value: r.monObs, onChange: rch('monObs'), placeholder: '6' },
+              { label: 'Monitored by', isText: true, isSelect: false, type: 'text', value: r.monBy, onChange: rch('monBy'), placeholder: 'TL' },
+              { label: 'Errors during monitoring', isText: true, isSelect: false, type: 'number', value: r.monErrors, onChange: rch('monErrors'), placeholder: '0' }
+            ] },
+            { step: 'Step 4 — Knowledge check', inputs: [
+              { label: 'Date', isText: true, isSelect: false, type: 'date', value: r.checkDate, onChange: rch('checkDate'), placeholder: '' },
+              { label: 'Administered by', isText: true, isSelect: false, type: 'text', value: r.checkBy, onChange: rch('checkBy'), placeholder: 'Supervisor' },
+              { label: 'Result', isSelect: true, isText: false, options: RETRAIN_RESULTS, value: r.checkResult, onChange: rch('checkResult') }
+            ] },
+            { step: 'Step 5 — Outcome / disposition', inputs: [
+              { label: 'Outcome', isSelect: true, isText: false, options: RETRAIN_OUTCOMES, value: r.outcome, onChange: rch('outcome') }
+            ] }
+          ]
+        };
+      } else {
+        vals.fd = { id: '', severity: '', sevColor: GREY, statusShort: '', statusBg: GREY, meta: '', breakDetail: '', standard: '', containment: '', locked: true, statusLocked: true, signals: [], notes: [], noNotes: true, retrainFields: [], retrainUsed: false, openBg: '#fff', openFg: GREY, closedBg: '#fff', closedFg: GREY };
+      }
+    }
+
+    // ---------- reports ----------
+    if (screen === 'reports') {
+      const r = s.rep;
+      const fr = this.filteredForReports();
+      const audits = fr.audits, findings = fr.findings;
+      const aud = audits.reduce(function (n, a) { return n + a.audited; }, 0);
+      const con = audits.reduce(function (n, a) { return n + a.conforming; }, 0);
+      const conf = aud ? con / aud : 0;
+      const closedVer = findings.filter(function (f) { return f.status === 'Closed - Verified Effective'; }).length;
+      const openN = findings.filter(function (f) { return f.status.indexOf('Closed') !== 0; }).length;
+      const escaped = findings.filter(function (f) { return f.impact === 'Yes - Escaped to Customer'; }).length;
+      const crit = findings.filter(function (f) { return f.severity === 'Critical'; }).length;
+      const rep = findings.filter(function (f) { return f.repeat === 'Yes'; }).length;
+      const closedItems = findings.filter(function (f) { return f.actual; });
+      const avgDays = closedItems.length ? Math.round(closedItems.reduce(function (n, f) { return n + daysBetween(f.date, f.actual); }, 0) / closedItems.length) : null;
+      const onTime = closedItems.filter(function (f) { return f.target && f.actual <= f.target; }).length;
+      const kpi = function (label, value, tgt, ok) { return { label: label, value: value, target: tgt, status: ok === null ? 'Info' : ok ? 'On target' : 'Off target', color: ok === null ? GREY : ok ? GREEN : CRIMSON }; };
+      vals.rep = {
+        scope: fmtDate(r.from) + ' – ' + fmtDate(r.to) + '  ·  ' + r.site + '  ·  ' + r.area,
+        from: r.from, to: r.to, site: r.site, area: r.area, status: r.status,
+        siteOptions: ['All sites'].concat(SITES),
+        areaOptions: ['All areas'].concat(AREAS),
+        statusOptions: ['All statuses', 'Open only', 'Closed only', 'Repeat only'],
+        setFrom: function (e) { const v = e.target.value; self.setState(function (st) { return { rep: Object.assign({}, st.rep, { from: v }) }; }); },
+        setTo: function (e) { const v = e.target.value; self.setState(function (st) { return { rep: Object.assign({}, st.rep, { to: v }) }; }); },
+        setSite: function (e) { const v = e.target.value; self.setState(function (st) { return { rep: Object.assign({}, st.rep, { site: v }) }; }); },
+        setArea: function (e) { const v = e.target.value; self.setState(function (st) { return { rep: Object.assign({}, st.rep, { area: v }) }; }); },
+        setStatus: function (e) { const v = e.target.value; self.setState(function (st) { return { rep: Object.assign({}, st.rep, { status: v }) }; }); },
+        print: function () { window.print(); },
+        kpis: [
+          kpi('Audits conducted', String(audits.length), '—', null),
+          kpi('Checkpoints audited', String(aud), '—', null),
+          kpi('First-pass conformance', aud ? Math.round(conf * 100) + '%' : '—', Math.round(target * 100) + '%', aud ? conf >= target : null),
+          kpi('Audits below target', String(audits.filter(function (a) { return a.result === 'FAIL'; }).length), '0', audits.filter(function (a) { return a.result === 'FAIL'; }).length === 0),
+          kpi('Total findings logged', String(findings.length), '—', null),
+          kpi('Critical findings', String(crit), '0', crit === 0),
+          kpi('Escaped to customer', String(escaped), '0', escaped === 0),
+          kpi('Open / in progress', String(openN), '—', null),
+          kpi('Closed — verified effective', String(closedVer), '—', null),
+          kpi('On-time closure', closedItems.length ? Math.round(onTime / closedItems.length * 100) + '%' : '—', '85%', closedItems.length ? onTime / closedItems.length >= 0.85 : null),
+          kpi('Avg. days to close', avgDays === null ? '—' : String(avgDays), '14', avgDays === null ? null : avgDays <= 14),
+          kpi('Repeat findings', String(rep), '0', rep === 0)
+        ],
+        trend: (function () {
+          const months = [];
+          const parse = function (iso, fallback) {
+            if (!iso) return fallback;
+            const p = String(iso).split('-').map(Number);
+            if (p.length < 3 || !p[0]) return fallback;
+            return new Date(p[0], p[1] - 1, p[2]);
+          };
+          const now = new Date();
+          const start = parse(r.from, new Date(now.getFullYear(), now.getMonth() - 5, 1));
+          const end = parse(r.to, now);
+          const span = (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth()) + 1;
+          const count = Math.max(1, Math.min(12, span));
+          for (let m = 0; m < count; m++) {
+            const d = new Date(start.getFullYear(), start.getMonth() + m, 1);
+            const key = d.getFullYear() + '-' + pad(d.getMonth() + 1, 2);
+            const ac = audits.filter(function (a) { return a.date.slice(0, 7) === key; }).length;
+            const fc = findings.filter(function (f) { return f.date.slice(0, 7) === key; }).length;
+            months.push({ key: key, label: d.toLocaleDateString(undefined, { month: 'short' }), a: ac, f: fc });
+          }
+          const max = Math.max(1, Math.max.apply(null, months.map(function (m) { return Math.max(m.a, m.f); })));
+          return months.map(function (m) {
+            return { label: m.label, audits: m.a || '', h: Math.max(3, Math.round(m.a / max * 120)) || 3, fh: m.a ? Math.round(m.f / Math.max(m.a, 1) * 100) : 0 };
+          });
+        })(),
+        bySite: (function () {
+          const maxN = Math.max(1, Math.max.apply(null, SITES.map(function (site) { return findings.filter(function (f) { return f.site === site; }).length; })));
+          return SITES.map(function (site) {
+            const a2 = audits.filter(function (a) { return a.site === site; });
+            const f2 = findings.filter(function (f) { return f.site === site; });
+            const au = a2.reduce(function (n, x) { return n + x.audited; }, 0);
+            const co = a2.reduce(function (n, x) { return n + x.conforming; }, 0);
+            return { name: site, detail: a2.length + (a2.length === 1 ? ' audit · ' : ' audits · ') + (au ? Math.round(co / au * 100) + '% conf' : 'no pts') + ' · ' + f2.length + (f2.length === 1 ? ' finding' : ' findings'), pct: Math.round(f2.length / maxN * 100) };
+          });
+        })(),
+        byCategory: (function () {
+          const counts = CATEGORIES.map(function (c) { return { name: c, n: findings.filter(function (f) { return f.category === c; }).length }; })
+            .filter(function (x) { return x.n > 0; }).sort(function (a, b) { return b.n - a.n; });
+          const maxN = Math.max(1, counts.length ? counts[0].n : 1);
+          if (!counts.length) return [{ name: 'No findings in scope', detail: '0', pct: 0 }];
+          return counts.map(function (c) { return { name: c.name, detail: c.n + (c.n === 1 ? ' finding' : ' findings'), pct: Math.round(c.n / maxN * 100) }; });
+        })(),
+        findingCount: findings.length,
+        tableHead: ['Finding', 'Audit', 'Date', 'Site', 'Area', 'Category', 'Severity', 'Auditee', 'Employee #', 'Repeat', 'Status', 'Owner'],
+        tableRows: findings.map(function (f) {
+          return { cells: [f.id, f.auditId, fmtDate(f.date), f.site, f.area, f.category, f.severity, f.auditeeName || '—', f.employee || '—', f.repeat, f.status, f.owner || '—'] };
+        }),
+        exportAudits: function () {
+          const rows = [['Audit ID', 'Date', 'Site', 'Auditee Name', 'Auditee Employee #', 'Customer', 'Shift', 'Layer', 'Audit Type', 'Area / Process', 'Auditor', 'Checkpoints Audited', 'Conforming', 'Conformance %', 'Findings Raised', 'Result vs Target', 'Notes']];
+          audits.forEach(function (a) {
+            rows.push([a.id, a.date, a.site, a.auditeeName || '', a.auditeeNo || '', a.customer, a.shift, a.layer, a.auditType, a.processName, a.auditor, a.audited, a.conforming, Math.round(a.pct * 100) + '%', store.findings.filter(function (f) { return f.auditId === a.id; }).length, a.result, a.notes]);
+          });
+          self.download('nots-audit-log.csv', self.csv(rows));
+        },
+        exportFindings: function () {
+          const rows = [['Finding ID', 'Audit ID', 'Date', 'Site', 'Customer', 'Shift', 'Area / Process', 'Audit Type', 'Observed By', 'Auditee Name', 'Employee #', 'Category', 'Break Detail', 'Standard', 'Severity', 'Repeat', 'Repeat signal - employee', 'Repeat signal - audit type', 'Customer Impact', 'Containment', 'Reason For Break', 'Root Cause', 'Countermeasure Type', 'Countermeasure Log', 'Retraining Used', 'Retraining Narrative', 'Owner', 'Target Completion', 'Actual Completion', 'Status', 'Days Open', 'Effectiveness', 'Reported To Customer']];
+          findings.forEach(function (f) {
+            rows.push([f.id, f.auditId, f.date, f.site, f.customer, f.shift, f.area, f.auditType, f.auditor, f.auditeeName || '', f.employee, f.category, f.breakDetail, f.standard, f.severity, f.repeat, f.repeatByEmployee.join(' '), f.repeatByType.join(' '), f.impact, f.containment, f.reason, f.rootCause, f.cmType,
+              f.notes.map(function (n) { return '[' + n.ts.slice(0, 16).replace('T', ' ') + ' ' + n.author + '] ' + n.text; }).join(' | '),
+              f.retrainUsed ? 'Yes' : 'No', f.retrain.narrative, f.owner, f.target, f.actual, f.status, f.actual ? daysBetween(f.date, f.actual) : daysBetween(f.date, todayISO()), f.effect, f.reported]);
+          });
+          self.download('nots-findings-log.csv', self.csv(rows));
+        }
+      };
+    }
+
+    // ---------- admin ----------
+    vals.adminTabs = ['Processes', 'People & Access', 'Settings'].map(function (label) {
+      const active = s.adminTab === label;
+      return { label: label, color: active ? CRIMSON : GREY, shadow: active ? 'inset 0 -3px 0 ' + CRIMSON : 'none', go: function () { self.setState({ adminTab: label }); } };
+    });
+    vals.adminOnProcesses = s.adminTab === 'Processes';
+    vals.adminOnPeople = s.adminTab === 'People & Access';
+    vals.adminOnSettings = s.adminTab === 'Settings';
+    vals.permRows = [
+      { role: 'Auditor', desc: 'Complete audits only. No access to the log, findings, reports or admin.' },
+      { role: 'Supervisor', desc: 'Complete audits, plus finding notes, reason for break, countermeasures and retraining detail. Cannot open or close a finding.' },
+      { role: 'Manager', desc: 'Everything a supervisor can do, plus toggling a finding open or closed.' },
+      { role: 'Admin', desc: 'Everything, including building and editing audit processes, people and access levels.' }
+    ];
+
+    const sel = store.processes.find(function (p) { return p.id === s.adminSel; });
+    const upd = function (fn) { self.mutate(function (store2) { const p = store2.processes.find(function (x) { return x.id === s.adminSel; }); if (p) fn(p); }); };
+    vals.admin = {
+      processes: store.processes.map(function (p) {
+        const active = p.id === s.adminSel;
+        return { name: p.name, sub: p.area + ' · ' + p.auditType + ' · ' + (p.site === 'All Sites' ? 'all sites' : p.site), count: p.checkpoints.length + ' pts', bg: active ? '#fff' : '#F8F8F6', border: active ? CRIMSON : '#DFDFDB', select: function () { self.setState({ adminSel: p.id }); } };
+      }),
+      hasSelection: !!sel,
+      noSelection: !sel,
+      sel: sel || { name: '', area: '', auditType: '', site: '' },
+      savedNote: 'Changes save as you type.',
+      setName: function (e) { const v = e.target.value; upd(function (p) { p.name = v; }); },
+      setArea: function (e) { const v = e.target.value; upd(function (p) { p.area = v; }); },
+      setAuditType: function (e) { const v = e.target.value; upd(function (p) { p.auditType = v; }); },
+      setSite: function (e) { const v = e.target.value; upd(function (p) { p.site = v; }); },
+      newProcess: function () {
+        const id = 'P' + Date.now();
+        self.mutate(function (store2) { store2.processes.push({ id: id, name: 'New audit process', area: AREAS[0], auditType: AUDIT_TYPES[0], site: 'All Sites', checkpoints: [] }); });
+        self.setState({ adminSel: id });
+      },
+      duplicate: function () {
+        if (!sel) return;
+        const id = 'P' + Date.now();
+        self.mutate(function (store2) {
+          const src = store2.processes.find(function (x) { return x.id === s.adminSel; });
+          const copy = JSON.parse(JSON.stringify(src));
+          copy.id = id; copy.name = src.name + ' (copy)';
+          store2.processes.push(copy);
+        });
+        self.setState({ adminSel: id });
+      },
+      deleteProcess: function () {
+        if (!sel) return;
+        self.mutate(function (store2) { store2.processes = store2.processes.filter(function (x) { return x.id !== s.adminSel; }); });
+        self.setState({ adminSel: null });
+      },
+      addCheckpoint: function () {
+        upd(function (p) { p.checkpoints.push({ id: 'c' + Date.now(), text: '', standard: '', category: CATEGORIES[0], severity: 'Major' }); });
+      },
+      noCheckpoints: !!sel && sel.checkpoints.length === 0,
+      checkpoints: (sel ? sel.checkpoints : []).map(function (c, i) {
+        return {
+          num: i + 1, text: c.text, standard: c.standard, category: c.category, severity: c.severity,
+          setText: function (e) { const v = e.target.value; upd(function (p) { p.checkpoints[i].text = v; }); },
+          setStandard: function (e) { const v = e.target.value; upd(function (p) { p.checkpoints[i].standard = v; }); },
+          setCategory: function (e) { const v = e.target.value; upd(function (p) { p.checkpoints[i].category = v; }); },
+          setSeverity: function (e) { const v = e.target.value; upd(function (p) { p.checkpoints[i].severity = v; }); },
+          remove: function () { upd(function (p) { p.checkpoints.splice(i, 1); }); },
+          up: function () { if (i > 0) upd(function (p) { const a = p.checkpoints; const t = a[i - 1]; a[i - 1] = a[i]; a[i] = t; }); },
+          down: function () { upd(function (p) { const a = p.checkpoints; if (i < a.length - 1) { const t = a[i + 1]; a[i + 1] = a[i]; a[i] = t; } }); }
+        };
+      }),
+      users: store.users.map(function (u, i) {
+        const uu = function (fn) { self.mutate(function (store2) { fn(store2.users[i]); }); };
+        return {
+          name: u.name, employeeNo: u.employeeNo, site: u.site, role: u.role,
+          setName: function (e) { const v = e.target.value; uu(function (x) { x.name = v; }); },
+          setEmployeeNo: function (e) { const v = e.target.value; uu(function (x) { x.employeeNo = v; }); },
+          setSite: function (e) { const v = e.target.value; uu(function (x) { x.site = v; }); },
+          setRole: function (e) { const v = e.target.value; uu(function (x) { x.role = v; }); },
+          remove: function () { self.mutate(function (store2) { store2.users.splice(i, 1); }); }
+        };
+      }),
+      newUser: function () {
+        self.mutate(function (store2) { store2.users.push({ id: 'U' + Date.now(), name: 'New person', employeeNo: 'EE #', site: SITES[0], role: 'Auditor' }); });
+      },
+      target: store.settings.target,
+      window: store.settings.window,
+      setTarget: function (e) { const v = Number(e.target.value); self.mutate(function (store2) { store2.settings.target = v; }); },
+      setWindow: function (e) { const v = Number(e.target.value); self.mutate(function (store2) { store2.settings.window = v; }); },
+      dataSummary: store.audits.length + ' audits · ' + store.findings.length + ' findings · ' + store.processes.length + ' processes · ' + store.users.length + ' people. All data is stored in this browser.',
+      exportAll: function () { self.download('nots-qa-backup.json', JSON.stringify(store, null, 2), 'application/json'); },
+      loadSample: function () { self.mutate(function (store2) { store2.processes = store2.processes.concat(seedProcesses().map(function (p) { p.id = p.id + '-' + Date.now(); return p; })); }); },
+      wipe: function () {
+        if (!window.confirm('Clear all audits and findings? Processes and people are kept.')) return;
+        self.mutate(function (store2) { store2.audits = []; store2.findings = []; store2.seq = { audit: 0, finding: 0 }; });
+      }
+    };
+
+    return vals;
+  }
+}
+</script>
+</body>
+</html>
