@@ -9,6 +9,17 @@
 <x-dc>
 <helmet>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+<script>
+  /* Paste your Supabase project credentials here. Both values are safe to
+     ship in the page — the anon key is designed to be public — but see
+     supabase-setup.md: with no login, anyone with the URL can read the data.
+     Leave blank to run in local-only mode (this browser only). */
+  window.NOTS_SUPABASE = {
+    url: '',
+    anonKey: ''
+  };
+</script>
+<script src="db.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,400;0,500;0,600;0,700;1,600&family=Barlow+Semi+Condensed:wght@500;600;700&display=swap" rel="stylesheet" />
 <style>
@@ -49,12 +60,23 @@
       <div style="font-family:'Barlow Semi Condensed',sans-serif;font-weight:600;font-size:17px;letter-spacing:.06em;text-transform:uppercase;color:#E8E8E6">Quality Audit</div>
       <div style="flex:1"></div>
       <div style="display:flex;align-items:center;gap:10px">
+        <div style="display:flex;align-items:center;gap:6px;background:{{ sync.bg }};border:1px solid {{ sync.border }};border-radius:4px;padding:5px 9px">
+          <div style="width:7px;height:7px;border-radius:4px;background:{{ sync.dot }}"></div>
+          <div style="font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:{{ sync.fg }};white-space:nowrap">{{ sync.label }}</div>
+        </div>
         <div style="text-align:right;line-height:1.15">
           <div style="font-size:14px;font-weight:600">{{ user.name }}</div>
           <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#B9BABC">{{ user.role }}</div>
         </div>
         <button onClick="{{ signOut }}" style="background:transparent;border:1px solid #4A4B4E;color:#D8D8D6;border-radius:4px;padding:7px 11px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer">Sign out</button>
       </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ hasSyncError }}" hint-placeholder-val="{{ false }}">
+    <div class="noprint" style="background:#8B0E2E;color:#fff;padding:11px 16px;display:flex;gap:12px;align-items:flex-start">
+      <div style="font-family:'Barlow Semi Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;padding-top:1px">Database error</div>
+      <div style="flex:1;font-size:13px;line-height:1.45;word-break:break-word">{{ syncError }}</div>
     </div>
   </sc-if>
 
@@ -1065,6 +1087,14 @@ function todayISO() { const d = new Date(); return d.toISOString().slice(0, 10);
 function fmtDate(iso) { if (!iso) return '-'; const p = String(iso).split('-'); if (p.length < 3) return iso; return p[1] + '/' + p[2] + '/' + p[0].slice(2); }
 function daysBetween(a, b) { return Math.round((new Date(b) - new Date(a)) / 86400000); }
 function pad(n, w) { return String(n).padStart(w, '0'); }
+// UUIDs so processes, checkpoints and people created on different devices never collide.
+function newId() {
+  if (window.crypto && window.crypto.randomUUID) return window.crypto.randomUUID();
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+    const r = Math.random() * 16 | 0;
+    return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+  });
+}
 
 function seedProcesses() {
   return [
@@ -1100,6 +1130,9 @@ function blankStore() {
 class Component extends DCLogic {
   state = {
     ready: false,
+    remote: false,
+    sync: 'idle',
+    syncError: '',
     store: blankStore(),
     user: null,
     screen: 'login',
@@ -1117,26 +1150,91 @@ class Component extends DCLogic {
     rep: { from: '', to: '', site: 'All sites', area: 'All areas', status: 'All statuses' }
   };
 
+  db() { return window.NOTSDB && window.NOTSDB.configured ? window.NOTSDB : null; }
+
   componentDidMount() {
-    let store = null;
-    try { const raw = window.localStorage.getItem(LS_KEY); if (raw) store = JSON.parse(raw); } catch (e) { store = null; }
-    if (!store || !store.processes) store = blankStore();
-    if (!store.settings) store.settings = { target: 95, window: 90 };
+    const self = this;
     const d = new Date();
-    const from = new Date(d.getFullYear(), d.getMonth() - 5, 1).toISOString().slice(0, 10);
-    this.setState({ store: store, ready: true, adminSel: store.processes.length ? store.processes[0].id : null, rep: Object.assign({}, this.state.rep, { from: from, to: todayISO() }) });
+    const from = new Date(d.getFullYear(), d.getMonth() - 5, 1);
+    const rep = Object.assign({}, this.state.rep, { from: from.getFullYear() + '-' + pad(from.getMonth() + 1, 2) + '-01', to: todayISO() });
+    const db = this.db();
+
+    if (!db) {
+      let store = null;
+      try { const raw = window.localStorage.getItem(LS_KEY); if (raw) store = JSON.parse(raw); } catch (e) { store = null; }
+      if (!store || !store.processes) store = blankStore();
+      if (!store.settings) store.settings = { target: 95, window: 90 };
+      this.setState({ store: store, ready: true, remote: false, sync: 'local', adminSel: store.processes.length ? store.processes[0].id : null, rep: rep });
+      return;
+    }
+
+    this.setState({ remote: true, sync: 'loading', rep: rep });
+    db.loadAll().then(function (store) {
+      self.setState({ store: store, ready: true, sync: 'idle', adminSel: store.processes.length ? store.processes[0].id : null });
+    }).catch(function (err) {
+      self.setState({ ready: true, sync: 'error', syncError: String(err.message || err) });
+    });
   }
 
+  // Local-only mode keeps its browser cache. Remote mode never writes to it —
+  // the database is the single source of truth.
   persist(store) {
+    if (this.state.remote) return;
     try { window.localStorage.setItem(LS_KEY, JSON.stringify(store)); } catch (e) {}
   }
 
-  mutate(fn) {
+  /* mutate(fn)            — local change only (no server write)
+     mutate(fn, syncSpec)  — local change, then push to Supabase.
+     syncSpec: {process:id} {processDelete:id} {user:id} {userDelete:id}
+               {finding:id} {settings:true}                              */
+  mutate(fn, syncSpec) {
+    const self = this;
     this.setState(function (s) {
       const store = JSON.parse(JSON.stringify(s.store));
       fn(store);
       return { store: store };
-    }, () => this.persist(this.state.store));
+    }, function () {
+      self.persist(self.state.store);
+      if (syncSpec) self.queueSync(syncSpec);
+    });
+  }
+
+  // Field edits fire on every keystroke, so pushes are debounced per target.
+  queueSync(spec) {
+    const db = this.db();
+    if (!db) return;
+    const self = this;
+    const key = Object.keys(spec)[0] + ':' + spec[Object.keys(spec)[0]];
+    this._syncTimers = this._syncTimers || {};
+    if (this._syncTimers[key]) clearTimeout(this._syncTimers[key]);
+    this._syncTimers[key] = setTimeout(function () {
+      delete self._syncTimers[key];
+      self.runSync(spec);
+    }, 700);
+  }
+
+  runSync(spec) {
+    const db = this.db();
+    if (!db) return Promise.resolve();
+    const self = this;
+    const store = this.state.store;
+    const find = function (list, id) { return list.find(function (x) { return x.id === id; }); };
+    let job = null;
+
+    if (spec.process) { const p = find(store.processes, spec.process); if (p) job = db.saveProcess(p, store.processes.indexOf(p)); }
+    else if (spec.processDelete) job = db.deleteProcess(spec.processDelete);
+    else if (spec.user) { const u = find(store.users, spec.user); if (u) job = db.saveUser(u, store.users.indexOf(u)); }
+    else if (spec.userDelete) job = db.deleteUser(spec.userDelete);
+    else if (spec.finding) { const f = find(store.findings, spec.finding); if (f) job = db.updateFinding(f); }
+    else if (spec.settings) job = db.saveSettings(store.settings);
+
+    if (!job) return Promise.resolve();
+    this.setState({ sync: 'saving' });
+    return job.then(function () {
+      if (!self._syncTimers || !Object.keys(self._syncTimers).length) self.setState({ sync: 'idle', syncError: '' });
+    }).catch(function (err) {
+      self.setState({ sync: 'error', syncError: String(err.message || err) });
+    });
   }
 
   perms() {
@@ -1221,58 +1319,92 @@ class Component extends DCLogic {
 
   submitAudit() {
     const self = this;
-    const d = this.state.draft;
+    const s = this.state;
+    const d = s.draft;
     const cps = d.checkpoints;
     const audited = cps.filter(function (c) { return c.result === 'conform' || c.result === 'break'; }).length;
     const conforming = cps.filter(function (c) { return c.result === 'conform'; }).length;
     const breaks = cps.filter(function (c) { return c.result === 'break'; });
     if (breaks.some(function (c) { return !c.note.trim(); })) return;
-    const target = this.state.store.settings.target / 100;
+    if (s.sync === 'submitting') return;
+
+    const store = s.store;
+    const target = store.settings.target / 100;
     const pct = audited ? conforming / audited : 0;
-    let auditId = '';
-    this.mutate(function (store) {
-      store.seq.audit += 1;
-      auditId = 'A-' + pad(store.seq.audit, 4);
-      const date = todayISO();
-      const audit = {
-        id: auditId, date: date, site: d.site, auditeeName: d.auditeeName, auditeeNo: d.auditeeNo, customer: d.customer, shift: d.shift, layer: d.layer,
-        auditType: d.auditType, area: d.area, processId: d.processId, processName: d.processName,
-        auditor: self.state.user.name, audited: audited, conforming: conforming, pct: pct,
-        result: pct >= target ? 'PASS' : 'FAIL', notes: d.notes,
-        checkpoints: cps.map(function (c) { return { text: c.text, standard: c.standard, result: c.result, note: c.note, findingId: '' }; })
-      };
-      breaks.forEach(function (c) {
-        store.seq.finding += 1;
-        const fid = 'F-' + pad(store.seq.finding, 4);
-        const idx = cps.indexOf(c);
-        audit.checkpoints[idx].findingId = fid;
-        const prior = store.findings.filter(function (f) { return f.id !== fid; });
-        const emp = c.employee || d.auditeeNo;
-        const byEmp = emp ? prior.filter(function (f) {
-          return f.employee && f.employee.toLowerCase() === emp.toLowerCase() && f.category === c.category && Math.abs(daysBetween(f.date, date)) <= store.settings.window;
-        }) : [];
-        const byType = prior.filter(function (f) {
-          return f.auditType === d.auditType && f.area === d.area && f.category === c.category && Math.abs(daysBetween(f.date, date)) <= store.settings.window;
-        });
-        store.findings.push({
-          id: fid, auditId: auditId, date: date, site: d.site, customer: d.customer, shift: d.shift,
-          area: d.area, auditType: d.auditType, auditor: self.state.user.name, processName: d.processName,
-          auditeeName: d.auditeeName, auditeeNo: d.auditeeNo,
-          employee: c.employee || d.auditeeNo, category: c.category, breakDetail: c.note, standard: c.standard,
-          severity: c.severity, impact: c.impact, containment: c.containment,
-          repeat: 'Unreviewed', repeatByEmployee: byEmp.map(function (f) { return f.id; }), repeatByType: byType.map(function (f) { return f.id; }),
-          reason: '', rootCause: 'Unreviewed', cmType: 'Unreviewed', owner: '', target: '', actual: '',
-          status: 'Open', effect: 'Too Early to Verify', reported: 'Pending',
-          retrainUsed: false, retrain: { removed: 'No', removedDate: '', topic: '', trainer: '', trainDate: '', method: RETRAIN_METHODS[0], monStart: '', monEnd: '', monObs: '', monBy: '', monErrors: '', checkDate: '', checkBy: '', checkResult: RETRAIN_RESULTS[0], outcome: RETRAIN_OUTCOMES[0], narrative: '' },
-          notes: []
-        });
+    const date = todayISO();
+    const auditor = s.user.name;
+    const win = store.settings.window;
+
+    const auditBase = {
+      date: date, site: d.site, auditeeName: d.auditeeName, auditeeNo: d.auditeeNo,
+      customer: d.customer, shift: d.shift, layer: d.layer, auditType: d.auditType, area: d.area,
+      processId: d.processId, processName: d.processName, auditor: auditor,
+      audited: audited, conforming: conforming, pct: pct,
+      result: pct >= target ? 'PASS' : 'FAIL', notes: d.notes
+    };
+
+    const findingBases = breaks.map(function (c) {
+      const emp = c.employee || d.auditeeNo;
+      const byEmp = emp ? store.findings.filter(function (f) {
+        return f.employee && f.employee.toLowerCase() === emp.toLowerCase() && f.category === c.category && Math.abs(daysBetween(f.date, date)) <= win;
+      }) : [];
+      const byType = store.findings.filter(function (f) {
+        return f.auditType === d.auditType && f.area === d.area && f.category === c.category && Math.abs(daysBetween(f.date, date)) <= win;
       });
-      store.audits.unshift(audit);
+      return {
+        date: date, site: d.site, customer: d.customer, shift: d.shift, area: d.area,
+        auditType: d.auditType, auditor: auditor, processName: d.processName,
+        auditeeName: d.auditeeName, auditeeNo: d.auditeeNo, employee: emp,
+        category: c.category, breakDetail: c.note, standard: c.standard,
+        severity: c.severity, impact: c.impact, containment: c.containment,
+        repeat: 'Unreviewed',
+        repeatByEmployee: byEmp.map(function (f) { return f.id; }),
+        repeatByType: byType.map(function (f) { return f.id; }),
+        reason: '', rootCause: 'Unreviewed', cmType: 'Unreviewed', owner: '', target: '', actual: '',
+        status: 'Open', effect: 'Too Early to Verify', reported: 'Pending', retrainUsed: false,
+        retrain: { removed: 'No', removedDate: '', topic: '', trainer: '', trainDate: '', method: RETRAIN_METHODS[0], monStart: '', monEnd: '', monObs: '', monBy: '', monErrors: '', checkDate: '', checkBy: '', checkResult: RETRAIN_RESULTS[0], outcome: RETRAIN_OUTCOMES[0], narrative: '' },
+        notes: []
+      };
     });
-    setTimeout(function () {
-      const a = self.state.store.audits[0];
-      self.setState({ screen: 'auditDone', lastAudit: a ? a.id : auditId });
-    }, 30);
+
+    // Land it locally under the ids the server (or the local counter) hands back.
+    const commit = function (auditId, findingIds) {
+      self.mutate(function (st) {
+        const audit = Object.assign({ id: auditId }, auditBase, {
+          checkpoints: cps.map(function (c) { return { text: c.text, standard: c.standard, result: c.result, note: c.note, findingId: '' }; })
+        });
+        findingBases.forEach(function (fb, i) {
+          const fid = findingIds[i];
+          audit.checkpoints[cps.indexOf(breaks[i])].findingId = fid;
+          st.findings.push(Object.assign({ id: fid, auditId: auditId }, fb));
+        });
+        st.audits.unshift(audit);
+        if (!self.state.remote) { st.seq.audit += 1; st.seq.finding += findingBases.length; }
+      });
+      self.setState({ screen: 'auditDone', lastAudit: auditId, sync: self.state.remote ? 'idle' : 'local', syncError: '' });
+    };
+
+    const db = this.db();
+    if (!db) {
+      const an = store.seq.audit + 1;
+      let fn = store.seq.finding;
+      commit('A-' + pad(an, 4), findingBases.map(function () { fn += 1; return 'F-' + pad(fn, 4); }));
+      return;
+    }
+
+    this.setState({ sync: 'submitting' });
+    db.submitAudit({
+      audit: auditBase,
+      findings: findingBases,
+      results: cps.map(function (c, i) {
+        const bi = breaks.indexOf(c);
+        return { position: i, text: c.text, standard: c.standard, result: c.result, note: c.note, breakIndex: bi < 0 ? null : bi };
+      })
+    }).then(function (res) {
+      commit(res.auditId, res.findingIds || []);
+    }).catch(function (err) {
+      self.setState({ sync: 'error', syncError: 'Audit was NOT saved: ' + String(err.message || err) });
+    });
   }
 
   // ---------- finding edits ----------
@@ -1280,27 +1412,40 @@ class Component extends DCLogic {
     this.mutate(function (store) {
       const f = store.findings.find(function (x) { return x.id === id; });
       if (f) Object.assign(f, patch);
-    });
+    }, { finding: id });
   }
 
   patchRetrain(id, patch) {
     this.mutate(function (store) {
       const f = store.findings.find(function (x) { return x.id === id; });
       if (f) f.retrain = Object.assign({}, f.retrain, patch);
-    });
+    }, { finding: id });
   }
 
   addNote(id) {
+    const self = this;
     const text = (this.state.noteDrafts[id] || '').trim();
     if (!text) return;
     const author = this.state.user.name;
-    const stamp = new Date();
-    this.mutate(function (store) {
-      const f = store.findings.find(function (x) { return x.id === id; });
-      if (f) f.notes.unshift({ ts: stamp.toISOString(), author: author, text: text });
+    const note = { ts: new Date().toISOString(), author: author, text: text };
+    const db = this.db();
+    const land = function (saved) {
+      self.mutate(function (store) {
+        const f = store.findings.find(function (x) { return x.id === id; });
+        if (f) f.notes.unshift(saved);
+      });
+      const nd = Object.assign({}, self.state.noteDrafts); nd[id] = '';
+      self.setState({ noteDrafts: nd });
+    };
+    if (!db) { land(note); return; }
+    this.setState({ sync: 'saving' });
+    db.addNote(id, note).then(function (rows) {
+      const row = rows && rows[0];
+      land(row ? { ts: row.created_at, author: row.author, text: row.text } : note);
+      self.setState({ sync: 'idle', syncError: '' });
+    }).catch(function (err) {
+      self.setState({ sync: 'error', syncError: 'Note was NOT saved: ' + String(err.message || err) });
     });
-    const nd = Object.assign({}, this.state.noteDrafts); nd[id] = '';
-    this.setState({ noteDrafts: nd });
   }
 
   download(name, text, type) {
@@ -1351,7 +1496,19 @@ class Component extends DCLogic {
     const screen = s.screen;
     const target = store.settings.target / 100;
 
+    const syncStates = {
+      local:      { label: 'This device only', dot: '#E0A040', fg: '#F0D8A8', bg: '#3A3126', border: '#5C4A2E' },
+      loading:    { label: 'Loading…',         dot: '#B9BABC', fg: '#D8D8D6', bg: '#26272A', border: '#3A3B3E' },
+      idle:       { label: 'Synced',           dot: '#3FA971', fg: '#B7E3C9', bg: '#1E2B24', border: '#2E4735' },
+      saving:     { label: 'Saving…',          dot: '#E0C060', fg: '#EDD9A0', bg: '#2E2A20', border: '#4A4230' },
+      submitting: { label: 'Saving audit…',    dot: '#E0C060', fg: '#EDD9A0', bg: '#2E2A20', border: '#4A4230' },
+      error:      { label: 'Not saved',        dot: '#E8607F', fg: '#F2B8C4', bg: '#332126', border: '#5C3340' }
+    };
+
     const vals = {
+      sync: syncStates[s.sync] || syncStates.idle,
+      syncError: s.syncError,
+      hasSyncError: s.sync === 'error' && !!s.syncError,
       showChrome: !!s.user && screen !== 'login',
       isLogin: screen === 'login',
       isHome: screen === 'home',
@@ -1552,11 +1709,18 @@ class Component extends DCLogic {
             const n = store.findings.filter(function (f) { return f.auditId === a.id; }).length;
             const msg = 'Delete ' + a.id + ' permanently?\n\nThis removes the audit, all of its checkpoint results' + (n ? ', and its ' + n + (n === 1 ? ' finding' : ' findings') + ' with every countermeasure note and retraining record' : '') + '. This cannot be undone.';
             if (!window.confirm(msg)) return;
-            self.mutate(function (store2) {
-              store2.audits = store2.audits.filter(function (x) { return x.id !== a.id; });
-              store2.findings = store2.findings.filter(function (f) { return f.auditId !== a.id; });
-            });
-            self.setState({ screen: 'log', logSelected: null });
+            const drop = function () {
+              self.mutate(function (store2) {
+                store2.audits = store2.audits.filter(function (x) { return x.id !== a.id; });
+                store2.findings = store2.findings.filter(function (f) { return f.auditId !== a.id; });
+              });
+              self.setState({ screen: 'log', logSelected: null });
+            };
+            const db = self.db();
+            if (!db) { drop(); return; }
+            self.setState({ sync: 'saving' });
+            db.deleteAudit(a.id).then(function () { drop(); self.setState({ sync: 'idle', syncError: '' }); })
+              .catch(function (err) { self.setState({ sync: 'error', syncError: 'Delete failed: ' + String(err.message || err) }); });
           },
           stats: [
             { label: 'Auditee', value: (a.auditeeName || '—') + (a.auditeeNo ? '  ·  ' + a.auditeeNo : '') },
@@ -1833,7 +1997,7 @@ class Component extends DCLogic {
     ];
 
     const sel = store.processes.find(function (p) { return p.id === s.adminSel; });
-    const upd = function (fn) { self.mutate(function (store2) { const p = store2.processes.find(function (x) { return x.id === s.adminSel; }); if (p) fn(p); }); };
+    const upd = function (fn) { self.mutate(function (store2) { const p = store2.processes.find(function (x) { return x.id === s.adminSel; }); if (p) fn(p); }, { process: s.adminSel }); };
     vals.admin = {
       processes: store.processes.map(function (p) {
         const active = p.id === s.adminSel;
@@ -1848,28 +2012,30 @@ class Component extends DCLogic {
       setAuditType: function (e) { const v = e.target.value; upd(function (p) { p.auditType = v; }); },
       setSite: function (e) { const v = e.target.value; upd(function (p) { p.site = v; }); },
       newProcess: function () {
-        const id = 'P' + Date.now();
-        self.mutate(function (store2) { store2.processes.push({ id: id, name: 'New audit process', area: AREAS[0], auditType: AUDIT_TYPES[0], site: 'All Sites', checkpoints: [] }); });
+        const id = newId();
+        self.mutate(function (store2) { store2.processes.push({ id: id, name: 'New audit process', area: AREAS[0], auditType: AUDIT_TYPES[0], site: 'All Sites', checkpoints: [] }); }, { process: id });
         self.setState({ adminSel: id });
       },
       duplicate: function () {
         if (!sel) return;
-        const id = 'P' + Date.now();
+        const id = newId();
         self.mutate(function (store2) {
           const src = store2.processes.find(function (x) { return x.id === s.adminSel; });
           const copy = JSON.parse(JSON.stringify(src));
           copy.id = id; copy.name = src.name + ' (copy)';
+          copy.checkpoints = copy.checkpoints.map(function (c) { return Object.assign({}, c, { id: newId() }); });
           store2.processes.push(copy);
-        });
+        }, { process: id });
         self.setState({ adminSel: id });
       },
       deleteProcess: function () {
         if (!sel) return;
-        self.mutate(function (store2) { store2.processes = store2.processes.filter(function (x) { return x.id !== s.adminSel; }); });
+        const gone = s.adminSel;
+        self.mutate(function (store2) { store2.processes = store2.processes.filter(function (x) { return x.id !== gone; }); }, { processDelete: gone });
         self.setState({ adminSel: null });
       },
       addCheckpoint: function () {
-        upd(function (p) { p.checkpoints.push({ id: 'c' + Date.now(), text: '', standard: '', category: CATEGORIES[0], severity: 'Major' }); });
+        upd(function (p) { p.checkpoints.push({ id: newId(), text: '', standard: '', category: CATEGORIES[0], severity: 'Major' }); });
       },
       noCheckpoints: !!sel && sel.checkpoints.length === 0,
       checkpoints: (sel ? sel.checkpoints : []).map(function (c, i) {
@@ -1885,29 +2051,46 @@ class Component extends DCLogic {
         };
       }),
       users: store.users.map(function (u, i) {
-        const uu = function (fn) { self.mutate(function (store2) { fn(store2.users[i]); }); };
+        const uu = function (fn) { self.mutate(function (store2) { fn(store2.users[i]); }, { user: u.id }); };
         return {
           name: u.name, employeeNo: u.employeeNo, site: u.site, role: u.role,
           setName: function (e) { const v = e.target.value; uu(function (x) { x.name = v; }); },
           setEmployeeNo: function (e) { const v = e.target.value; uu(function (x) { x.employeeNo = v; }); },
           setSite: function (e) { const v = e.target.value; uu(function (x) { x.site = v; }); },
           setRole: function (e) { const v = e.target.value; uu(function (x) { x.role = v; }); },
-          remove: function () { self.mutate(function (store2) { store2.users.splice(i, 1); }); }
+          remove: function () { self.mutate(function (store2) { store2.users.splice(i, 1); }, { userDelete: u.id }); }
         };
       }),
       newUser: function () {
-        self.mutate(function (store2) { store2.users.push({ id: 'U' + Date.now(), name: 'New person', employeeNo: 'EE #', site: SITES[0], role: 'Auditor' }); });
+        const id = newId();
+        self.mutate(function (store2) { store2.users.push({ id: id, name: 'New person', employeeNo: 'EE #', site: SITES[0], role: 'Auditor' }); }, { user: id });
       },
       target: store.settings.target,
       window: store.settings.window,
-      setTarget: function (e) { const v = Number(e.target.value); self.mutate(function (store2) { store2.settings.target = v; }); },
-      setWindow: function (e) { const v = Number(e.target.value); self.mutate(function (store2) { store2.settings.window = v; }); },
-      dataSummary: store.audits.length + ' audits · ' + store.findings.length + ' findings · ' + store.processes.length + ' processes · ' + store.users.length + ' people. All data is stored in this browser.',
+      setTarget: function (e) { const v = Number(e.target.value); self.mutate(function (store2) { store2.settings.target = v; }, { settings: true }); },
+      setWindow: function (e) { const v = Number(e.target.value); self.mutate(function (store2) { store2.settings.window = v; }, { settings: true }); },
+      dataSummary: store.audits.length + ' audits · ' + store.findings.length + ' findings · ' + store.processes.length + ' processes · ' + store.users.length + ' people. ' + (s.remote ? 'Stored in the shared Supabase database — visible on every device.' : 'Stored in this browser only. Add Supabase credentials to share across devices.'),
       exportAll: function () { self.download('nots-qa-backup.json', JSON.stringify(store, null, 2), 'application/json'); },
-      loadSample: function () { self.mutate(function (store2) { store2.processes = store2.processes.concat(seedProcesses().map(function (p) { p.id = p.id + '-' + Date.now(); return p; })); }); },
+      loadSample: function () {
+        const fresh = seedProcesses().map(function (p) {
+          p.id = newId();
+          p.checkpoints = p.checkpoints.map(function (c) { return Object.assign({}, c, { id: newId() }); });
+          return p;
+        });
+        self.mutate(function (store2) { store2.processes = store2.processes.concat(fresh); });
+        fresh.forEach(function (p) { self.queueSync({ process: p.id }); });
+      },
       wipe: function () {
         if (!window.confirm('Clear all audits and findings? Processes and people are kept.')) return;
+        const ids = store.audits.map(function (a) { return a.id; });
         self.mutate(function (store2) { store2.audits = []; store2.findings = []; store2.seq = { audit: 0, finding: 0 }; });
+        const db = self.db();
+        if (db) {
+          self.setState({ sync: 'saving' });
+          Promise.all(ids.map(function (id) { return db.deleteAudit(id); }))
+            .then(function () { self.setState({ sync: 'idle', syncError: '' }); })
+            .catch(function (err) { self.setState({ sync: 'error', syncError: String(err.message || err) }); });
+        }
       }
     };
 
