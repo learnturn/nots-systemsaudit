@@ -21,6 +21,15 @@ The header shows which mode you're in: **This device only**, **Synced**, **Savin
 
 This also seeds the four starting people and the two sample audit processes, so the app is usable the moment it connects. Edit or delete them in the Admin Portal.
 
+### Resetting audit numbering
+
+If a failed submission ever consumes an ID without saving a row, audit numbers skip. To restart the counters (only safe while there are no audits yet):
+
+```sql
+alter sequence audit_seq restart with 1;
+alter sequence finding_seq restart with 1;
+```
+
 ## 3. Get your two credentials
 
 **Project Settings** (gear icon) → **API**. Copy:
@@ -28,7 +37,7 @@ This also seeds the four starting people and the two sample audit processes, so 
 - **Project URL** — looks like `https://abcdefghijkl.supabase.co`
 - **anon public** key — a long string starting `eyJ...`
 
-Send both to me and I'll wire them into the app. Or paste them yourself: they go in the `window.NOTS_SUPABASE` block at the top of `QA Audit App.dc.html`. If you edit it yourself, tell me so I can rebuild `index.html` — the deployed file is a compiled copy and won't pick up the change on its own.
+These live at the top of **`db.js`**, in the `window.NOTS_SUPABASE` block. They are already filled in for the `CAR` project. If you ever swap projects, edit `db.js` and tell me so I can rebuild `index.html` — the deployed file is a compiled copy and won't pick up the change on its own.
 
 ## 4. Deploy
 

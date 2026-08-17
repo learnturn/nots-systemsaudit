@@ -1,15 +1,32 @@
 /* NOTS Quality Audit — Supabase data layer.
    Talks to Supabase's REST API with plain fetch: no SDK, nothing to bundle.
-   Exposes window.NOTSDB. If no credentials are configured the app falls back
-   to browser-local storage and says so in the header. */
+   Exposes window.NOTSDB. If no credentials are set below the app falls back
+   to browser-local storage and says so in the header.
+
+   ---------------------------------------------------------------------------
+   CREDENTIALS — the only thing you edit in this file.
+   Both values are safe to ship in the page (the publishable key is designed to
+   be public), but see supabase-setup.md: with no login, anyone with the site
+   URL can read this data. Never put a secret / service_role key here.
+   --------------------------------------------------------------------------- */
+window.NOTS_SUPABASE = window.NOTS_SUPABASE || {
+  url: 'https://mlwrwmwvabzwenknsase.supabase.co',
+  anonKey: 'sb_publishable_Dw1SKlFxpSNeo4r-BMFsDQ_ZD24c5iG'
+};
+
 (function () {
   var cfg = window.NOTS_SUPABASE || {};
   var URL_BASE = String(cfg.url || '').replace(/\/+$/, '');
   var KEY = String(cfg.anonKey || '');
   var REST = URL_BASE + '/rest/v1';
 
+  // Two key formats in the wild: legacy anon JWTs (eyJ...) want an
+  // Authorization bearer too; the newer sb_publishable_ keys go in apikey only.
+  var IS_JWT = KEY.slice(0, 3) === 'eyJ';
+
   function headers(extra) {
-    var h = { apikey: KEY, Authorization: 'Bearer ' + KEY, 'Content-Type': 'application/json' };
+    var h = { apikey: KEY, 'Content-Type': 'application/json' };
+    if (IS_JWT) h.Authorization = 'Bearer ' + KEY;
     if (extra) for (var k in extra) h[k] = extra[k];
     return h;
   }
